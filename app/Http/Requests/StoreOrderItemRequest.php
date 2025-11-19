@@ -11,8 +11,8 @@ class StoreOrderItemRequest extends FormRequest
     public function rules()
     {
         return [
-            'Order_id'  => 'required|exists:Order,id',
-            'Listing_id' => 'required|exists:Listing,id',
+            'order_id'  => 'required|exists:order,id',
+            'listing_id' => 'required|exists:listing,id',
             'kaina'        => 'required|numeric|min:0',
             'kiekis'       => 'required|integer|min:1'
         ];

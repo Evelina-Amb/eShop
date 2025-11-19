@@ -11,7 +11,7 @@ class UpdateCountryRequest extends FormRequest
     public function rules()
     {
         return [
-            'pavadinimas' => 'sometimes|string|max:100|unique:Country,pavadinimas,' . $this->route('id')
+            'pavadinimas' => 'sometimes|string|max:100|unique:country,pavadinimas,' . $this->route('id')
         ];
     }
 }

@@ -12,7 +12,7 @@ class StoreCartRequest extends FormRequest
     {
         return [
             'user_id'      => 'required|exists:users,id',
-            'Listing_id' => 'required|exists:Listing,id',
+            'listing_id' => 'required|exists:listing,id',
             'kiekis'       => 'required|integer|min:1'
         ];
     }

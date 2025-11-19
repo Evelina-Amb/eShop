@@ -12,7 +12,7 @@ class UpdateFavoriteRequest extends FormRequest
     {
         return [
             'user_id'      => 'sometimes|exists:users,id',
-            'Listing_id' => 'sometimes|exists:Listing,id'
+            'listing_id' => 'sometimes|exists:listing,id'
         ];
     }
 }

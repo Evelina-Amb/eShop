@@ -19,7 +19,7 @@ class StoreListingRequest extends FormRequest
             'kaina'         => 'required|numeric|min:0',
             'tipas'         => 'required|string|in:preke,paslauga',
             'user_id'       => 'required|exists:users,id',
-            'Category_id' => 'required|exists:Category,id',
+            'category_id' => 'required|exists:category,id',
             'statusas'      => 'nullable|string|in:aktyvus,rezervuotas,parduotas'
         ];
     }

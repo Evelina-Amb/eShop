@@ -19,7 +19,7 @@ class StoreUserRequest extends FormRequest
             'el_pastas'   => 'required|email|unique:users,el_pastas',
             'slaptazodis' => 'required|string|min:6',
             'telefonas'   => 'nullable|string|max:30',
-            'Address_id'  => 'required|exists:Address,id',
+            'address_id'  => 'required|exists:address,id',
             'role'        => 'required|string|in:admin,seller'
         ];
     }

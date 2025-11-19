@@ -11,7 +11,7 @@ class StoreCountryRequest extends FormRequest
     public function rules()
     {
         return [
-            'pavadinimas' => 'required|string|max:100|unique:Country,pavadinimas'
+            'pavadinimas' => 'required|string|max:100|unique:country,pavadinimas'
         ];
     }
 }

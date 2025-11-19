@@ -14,7 +14,7 @@ class StoreAddressRequest extends FormRequest
             'gatve'      => 'required|string|max:100',
             'namo_nr'    => 'nullable|string|max:10',
             'buto_nr'    => 'nullable|string|max:10',
-            'City_id' => 'required|exists:City,id'
+            'city_id' => 'required|exists:city,id'
         ];
     }
 }

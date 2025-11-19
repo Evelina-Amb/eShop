@@ -19,7 +19,7 @@ class UpdateUserRequest extends FormRequest
             'el_pastas'   => 'sometimes|email|unique:users,el_pastas,' . $this->route('id'),
             'slaptazodis' => 'sometimes|string|min:6',
             'telefonas'   => 'nullable|string|max:30',
-            'Address_id'  => 'sometimes|exists:Address,id',
+            'address_id'  => 'sometimes|exists:address,id',
             'role'        => 'sometimes|string|in:admin,seller'
         ];
     }

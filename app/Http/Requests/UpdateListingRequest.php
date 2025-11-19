@@ -15,7 +15,7 @@ class UpdateListingRequest extends FormRequest
             'aprasymas'     => 'sometimes|string',
             'kaina'         => 'sometimes|numeric|min:0',
             'tipas'         => 'sometimes|string|in:preke,paslauga',
-            'Category_id' => 'sometimes|exists:Category,id',
+            'category_id' => 'sometimes|exists:category,id',
             'statusas'      => 'sometimes|string|in:aktyvus,rezervuotas,parduotas'
         ];
     }

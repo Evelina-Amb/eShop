@@ -14,7 +14,7 @@ class UpdateAddressRequest extends FormRequest
             'gatve'      => 'sometimes|string|max:100',
             'namo_nr'    => 'nullable|string|max:10',
             'buto_nr'    => 'nullable|string|max:10',
-            'City_id' => 'sometimes|exists:City,id'
+            'city_id' => 'sometimes|exists:city,id'
         ];
     }
 }

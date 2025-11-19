@@ -12,7 +12,7 @@ class StoreCityRequest extends FormRequest
     {
         return [
             'pavadinimas' => 'required|string|max:100',
-            'Country_id'    => 'required|exists:Country,id'
+            'country_id'    => 'required|exists:country,id'
         ];
     }
 }

@@ -11,7 +11,7 @@ class StoreListingPhotoRequest extends FormRequest
     public function rules()
     {
         return [
-            'Listing_id' => 'required|exists:Listing,id',
+            'listing_id' => 'required|exists:listing,id',
             'failo_url'    => 'required|string|max:255'
         ];
     }
