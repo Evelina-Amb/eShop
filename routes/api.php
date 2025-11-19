@@ -8,16 +8,16 @@ use App\Http\Controllers\Api\{
 };
 
 Route::apiResources([
-    'salis' => CountryController::class,
-    'miestai' => CityController::class,
-    'adresai' => AddressController::class,
-    'kategorijos' => CategoryController::class,
-    'nuotraukos' => ListingPhotoController::class,
-    'atsiliepimai' => ReviewController::class,
-    'krepselis' => CartController::class,
-    'isiminti' => FavoriteController::class,
-    'pirkimai' => OrderController::class,
-    'pirkimo-prekes' => OrderItemController::class,
+    'country' => CountryController::class,
+    'city' => CityController::class,
+    'address' => AddressController::class,
+    'category' => CategoryController::class,
+    'listingPhoto' => ListingPhotoController::class,
+    'review' => ReviewController::class,
+    'cart' => CartController::class,
+    'favorite' => FavoriteController::class,
+    'order' => OrderController::class,
+    'orderItem' => OrderItemController::class,
     'users' => UserController::class,
-    'skelbimai'=> ListingController::class,
+    'listing'=> ListingController::class,
 ]);
