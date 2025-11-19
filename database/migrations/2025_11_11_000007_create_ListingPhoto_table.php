@@ -7,19 +7,19 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('ListingPhoto', function (Blueprint $table) {
+        Schema::create('listingPhoto', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('Listing_id');
+            $table->unsignedBigInteger('listing_id');
             $table->string('failo_url', 255);
             $table->timestamps();
 
-            $table->foreign('Listing_id')->references('id')->on('Listing')->onDelete('cascade');
+            $table->foreign('listing_id')->references('id')->on('listing')->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('ListingPhoto');
+        Schema::dropIfExists('listingPhoto');
     }
 };
 

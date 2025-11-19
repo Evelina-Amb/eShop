@@ -7,21 +7,21 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('Review', function (Blueprint $table) {
+        Schema::create('review', function (Blueprint $table) {
             $table->id();
             $table->integer('ivertinimas');
             $table->text('komentaras')->nullable();
-            $table->unsignedBigInteger('Listing_id');
+            $table->unsignedBigInteger('listing_id');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
-            $table->foreign('Listing_id')->references('id')->on('Listing')->onDelete('cascade');
+            $table->foreign('listing_id')->references('id')->on('listing')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('Review');
+        Schema::dropIfExists('review');
     }
 };

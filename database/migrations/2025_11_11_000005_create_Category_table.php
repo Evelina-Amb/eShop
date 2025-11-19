@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('Category', function (Blueprint $table) {
+        Schema::create('category', function (Blueprint $table) {
             $table->id();
             $table->string('pavadinimas', 100);
             $table->string('aprasymas', 255)->nullable();
@@ -18,7 +18,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('Category');
+        Schema::dropIfExists('category');
     }
 };
 

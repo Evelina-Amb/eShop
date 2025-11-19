@@ -13,10 +13,10 @@ return new class extends Migration {
             $table->string('el_pastas', 100)->unique();
             $table->string('slaptazodis', 255);
             $table->string('telefonas', 30)->nullable();
-            $table->unsignedBigInteger('Address_id')->nullable();
+            $table->unsignedBigInteger('address_id')->nullable();
             $table->string('role', 20)->default('pirkejas');
             $table->timestamps();
-           $table->foreign('Address_id')->references('id')->on('Address')->onDelete('cascade');
+           $table->foreign('address_id')->references('id')->on('address')->onDelete('cascade');
         });
     }
 

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('Order', function (Blueprint $table) {
+        Schema::create('order', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->timestamp('pirkimo_data')->useCurrent();
@@ -21,7 +21,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('Order');
+        Schema::dropIfExists('order');
     }
 };
 
