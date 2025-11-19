@@ -9,11 +9,11 @@ class Listing extends Model
 {
     use HasFactory;
 
-    protected $table = 'Listing';
+    protected $table = 'listing';
 
     protected $fillable = [
         'pavadinimas', 'aprasymas', 'kaina', 'tipas',
-        'user_id', 'Category_id', 'statusas'
+        'user_id', 'category_id', 'statusas'
     ];
 
     public function user()
@@ -23,16 +23,16 @@ class Listing extends Model
 
    public function Category()
    {
-    return $this->belongsTo(Category::class, 'Category_id');
+    return $this->belongsTo(Category::class, 'category_id');
    }
 
     public function ListingPhoto()
     {
-        return $this->hasMany(ListingPhoto::class);
+        return $this->hasMany(ListingPhoto::class, 'listing_id', 'id');
     }
 
     public function Review()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class, 'listing_id', 'id');
     }
 }

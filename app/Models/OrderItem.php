@@ -9,8 +9,8 @@ class OrderItem extends Model
 {
     use HasFactory;
 
-        protected $table = 'OrderItem';
-    protected $fillable = ['Order_id', 'Listing_id', 'kaina', 'kiekis'];
+        protected $table = 'orderItem';
+    protected $fillable = ['order_id', 'listing_id', 'kaina', 'kiekis'];
 
     public function Order()
     {

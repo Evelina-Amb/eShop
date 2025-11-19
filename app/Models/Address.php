@@ -8,8 +8,8 @@ class Address extends Model
 {
     use HasFactory;
 
-    protected $table = 'Address';
-    protected $fillable = ['gatve', 'namo_nr', 'buto_nr', 'City_id'];
+    protected $table = 'address';
+    protected $fillable = ['gatve', 'namo_nr', 'buto_nr', 'city_id'];
 
     public function City()
     {

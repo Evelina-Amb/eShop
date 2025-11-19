@@ -9,12 +9,12 @@ class Category extends Model
 {
     use HasFactory;
     
-    protected $table = 'Category';
+    protected $table = 'category';
 
     protected $fillable = ['pavadinimas', 'aprasymas', 'tipo_zenklas'];
 
     public function Listing()
     {
-        return $this->hasMany(Listing::class, 'Category_id');
+         return $this->hasMany(Listing::class, 'category_id');
     }
 }
