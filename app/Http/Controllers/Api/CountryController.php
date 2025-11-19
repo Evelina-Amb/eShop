@@ -2,47 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Country;
-use App\Http\Resources\CountryResource;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreCountryRequest;
 use App\Http\Requests\UpdateCountryRequest;
+use App\Http\Resources\CountryResource;
+use App\Services\CountryService;
 
 class CountryController extends BaseController
 {
+    protected CountryService $countryService;
+
+    public function __construct(CountryService $countryService)
+    {
+        $this->countryService = $countryService;
+    }
+
     public function index()
     {
-        return $this->sendResponse(CountryResource::collection(Country::all()), 'Šalys gautos.');
+        $countries = $this->countryService->getAll();
+        return $this->sendResponse(CountryResource::collection($countries), 'Countries retrieved.');
     }
 
     public function show($id)
     {
-        $item = Country::find($id);
-        if (!$item) return $this->sendError('Šalis nerasta', 404);
+        $country = $this->countryService->getById($id);
+        if (!$country) return $this->sendError('Country not found.', 404);
 
-        return $this->sendResponse(new CountryResource($item), 'Šalis rasta.');
+        return $this->sendResponse(new CountryResource($country), 'Country found.');
     }
 
     public function store(StoreCountryRequest $request)
     {
-        $item = Country::create($request->validated());
-        return $this->sendResponse(new CountryResource($item), 'Šalis sukurta.', 201);
+        $country = $this->countryService->create($request->validated());
+        return $this->sendResponse(new CountryResource($country), 'Country created.', 201);
     }
 
     public function update(UpdateCountryRequest $request, $id)
     {
-        $item = Country::find($id);
-        if (!$item) return $this->sendError('Šalis nerasta', 404);
+        $country = $this->countryService->update($id, $request->validated());
+        if (!$country) return $this->sendError('Country not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new CountryResource($item), 'Šalis atnaujinta.');
+        return $this->sendResponse(new CountryResource($country), 'Country updated.');
     }
 
     public function destroy($id)
     {
-        $item = Country::find($id);
-        if (!$item) return $this->sendError('Šalis nerasta', 404);
+        $deleted = $this->countryService->delete($id);
+        if (!$deleted) return $this->sendError('Country not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Šalis ištrinta.');
+        return $this->sendResponse(null, 'Country deleted.');
     }
 }

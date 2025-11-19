@@ -2,50 +2,55 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Category;
-use App\Http\Resources\CategoryResource;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
+use App\Services\CategoryService;
 
 class CategoryController extends BaseController
 {
+    protected CategoryService $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     public function index()
     {
-        return $this->sendResponse(
-            CategoryResource::collection(Category::all()),
-            'Kategorijos sėkmingai gautos.'
-        );
+        $categories = $this->categoryService->getAll();
+        return $this->sendResponse(CategoryResource::collection($categories), 'Categories retrieved.');
     }
 
     public function show($id)
     {
-        $item = Category::find($id);
-        if (!$item) return $this->sendError('Kategorija nerasta', 404);
+        $category = $this->categoryService->getById($id);
+        if (!$category) return $this->sendError('Category not found.', 404);
 
-        return $this->sendResponse(new CategoryResource($item), 'Kategorija rasta.');
+        return $this->sendResponse(new CategoryResource($category), 'Category found.');
     }
 
     public function store(StoreCategoryRequest $request)
     {
-        $item = Category::create($request->validated());
-        return $this->sendResponse(new CategoryResource($item), 'Kategorija sukurta sėkmingai.', 201);
+        $category = $this->categoryService->create($request->validated());
+        return $this->sendResponse(new CategoryResource($category), 'Category created.', 201);
     }
+
 
     public function update(UpdateCategoryRequest $request, $id)
     {
-        $item = Category::find($id);
-        if (!$item) return $this->sendError('Kategorija nerasta', 404);
+        $category = $this->categoryService->update($id, $request->validated());
+        if (!$category) return $this->sendError('Category not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new CategoryResource($item), 'Kategorija atnaujinta.');
+    return $this->sendResponse(new CategoryResource($category), 'Category updated.');
     }
 
     public function destroy($id)
     {
-        $item = Category::find($id);
-        if (!$item) return $this->sendError('Kategorija nerasta', 404);
+        $deleted = $this->categoryService->delete($id);
+        if (!$deleted) return $this->sendError('Category not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Kategorija ištrinta.');
+        return $this->sendResponse(null, 'Category deleted.');
     }
 }

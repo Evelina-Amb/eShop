@@ -2,56 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\UserResource;
+use App\Services\UserService;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends BaseController
 {
+    protected UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function index()
     {
-        $users = User::with('adresas.miestas.salis')->get();
-        return $this->sendResponse(UserResource::collection($users), 'Vartotojai sėkmingai gauti.');
+        $users = $this->userService->getAll();
+        return $this->sendResponse(UserResource::collection($users), 'Users retrieved.');
     }
 
     public function show($id)
     {
-        $user = User::with('adresas.miestas.salis')->find($id);
-        if (!$user) return $this->sendError('Vartotojas nerastas', 404);
+        $user = $this->userService->getById($id);
+        if (!$user) return $this->sendError('User not found.', 404);
 
-        return $this->sendResponse(new UserResource($user), 'Vartotojas rastas.');
+        return $this->sendResponse(new UserResource($user), 'User found.');
     }
 
     public function store(StoreUserRequest $request)
     {
-        $data = $request->validated();
-        $data['slaptazodis'] = bcrypt($data['slaptazodis']);
-
-        $user = User::create($data);
-        return $this->sendResponse(new UserResource($user), 'Vartotojas sukurtas.', 201);
+        $user = $this->userService->create($request->validated());
+        return $this->sendResponse(new UserResource($user), 'User created.', 201);
     }
 
     public function update(UpdateUserRequest $request, $id)
     {
-        $user = User::find($id);
-        if (!$user) return $this->sendError('Vartotojas nerastas', 404);
+        $user = $this->userService->update($id, $request->validated());
+        if (!$user) return $this->sendError('User not found.', 404);
 
-        $data = $request->validated();
-        if (isset($data['slaptazodis'])) {
-            $data['slaptazodis'] = bcrypt($data['slaptazodis']);
-        }
-
-        $user->update($data);
-        return $this->sendResponse(new UserResource($user), 'Vartotojas atnaujintas.');
+        return $this->sendResponse(new UserResource($user), 'User updated.');
     }
 
     public function destroy($id)
     {
-        $user = User::find($id);
-        if (!$user) return $this->sendError('Vartotojas nerastas', 404);
+        $deleted = $this->userService->delete($id);
+        if (!$deleted) return $this->sendError('User not found.', 404);
 
-        $user->delete();
-        return $this->sendResponse(null, 'Vartotojas ištrintas.');
+        return $this->sendResponse(null, 'User deleted.');
     }
 }

@@ -2,48 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Favorite;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\FavoriteResource;
+use App\Services\FavoriteService;
 use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
 
 class FavoriteController extends BaseController
 {
+    protected FavoriteService $favoriteService;
+
+    public function __construct(FavoriteService $favoriteService)
+    {
+        $this->favoriteService = $favoriteService;
+    }
+
     public function index()
     {
-        $items = Favorite::with(['user', 'Listing'])->get();
-        return $this->sendResponse(FavoriteResource::collection($items), 'Įsiminti skelbimai gauti.');
+        $favorites = $this->favoriteService->getAll();
+        return $this->sendResponse(FavoriteResource::collection($favorites), 'Favorites retrieved.');
     }
 
     public function show($id)
     {
-        $item = Favorite::with(['user', 'Listing'])->find($id);
-        if (!$item) return $this->sendError('Įsimintas skelbimas nerastas', 404);
+        $favorite = $this->favoriteService->getById($id);
+        if (!$favorite) return $this->sendError('Favorite not found.', 404);
 
-        return $this->sendResponse(new FavoriteResource($item), 'Įsimintas skelbimas rastas.');
+        return $this->sendResponse(new FavoriteResource($favorite), 'Favorite found.');
     }
 
     public function store(StoreFavoriteRequest $request)
     {
-        $item = Favorite::create($request->validated());
-        return $this->sendResponse(new FavoriteResource($item), 'Skelbimas įsimintas.', 201);
+        $favorite = $this->favoriteService->create($request->validated());
+        return $this->sendResponse(new FavoriteResource($favorite), 'Favorite created.', 201);
     }
 
     public function update(UpdateFavoriteRequest $request, $id)
     {
-        $item = Favorite::find($id);
-        if (!$item) return $this->sendError('Įsimintas skelbimas nerastas', 404);
+        $favorite = $this->favoriteService->update($id, $request->validated());
+        if (!$favorite) return $this->sendError('Favorite not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new FavoriteResource($item), 'Įsimintas skelbimas atnaujintas.');
+        return $this->sendResponse(new FavoriteResource($favorite), 'Favorite updated.');
     }
 
     public function destroy($id)
     {
-        $item = Favorite::find($id);
-        if (!$item) return $this->sendError('Įsimintas skelbimas nerastas', 404);
+        $deleted = $this->favoriteService->delete($id);
+        if (!$deleted) return $this->sendError('Favorite not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Skelbimas pašalintas iš įsimintų.');
+        return $this->sendResponse(null, 'Favorite deleted.');
     }
 }

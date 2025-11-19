@@ -2,48 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Listing;
-use App\Http\Resources\ListingResource;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
+use App\Http\Resources\ListingResource;
+use App\Services\ListingService;
 
 class ListingController extends BaseController
 {
+    protected ListingService $listingService;
+
+    public function __construct(ListingService $listingService)
+    {
+        $this->listingService = $listingService;
+    }
+
     public function index()
     {
-        $items = Listing::with(['user', 'kategorija', 'nuotraukos'])->get();
-        return $this->sendResponse(ListingResource::collection($items), 'Visi skelbimai sėkmingai gauti.');
+        $listings = $this->listingService->getAll();
+        return $this->sendResponse(ListingResource::collection($listings), 'Listings retrieved.');
     }
 
     public function show($id)
     {
-        $item = Listing::with(['user', 'kategorija', 'nuotraukos'])->find($id);
-        if (!$item) return $this->sendError('Skelbimas nerastas', 404);
+        $listing = $this->listingService->getById($id);
+        if (!$listing) return $this->sendError('Listing not found.', 404);
 
-        return $this->sendResponse(new ListingResource($item), 'Skelbimas rastas.');
+        return $this->sendResponse(new ListingResource($listing), 'Listing found.');
     }
 
     public function store(StoreListingRequest $request)
     {
-        $item = Listing::create($request->validated());
-        return $this->sendResponse(new ListingResource($item), 'Skelbimas sukurtas sėkmingai.', 201);
+        $listing = $this->listingService->create($request->validated());
+        return $this->sendResponse(new ListingResource($listing), 'Listing created.', 201);
     }
 
     public function update(UpdateListingRequest $request, $id)
     {
-        $item = Listing::find($id);
-        if (!$item) return $this->sendError('Skelbimas nerastas', 404);
+        $listing = $this->listingService->update($id, $request->validated());
+        if (!$listing) return $this->sendError('Listing not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new ListingResource($item), 'Skelbimas atnaujintas.');
+        return $this->sendResponse(new ListingResource($listing), 'Listing updated.');
     }
 
     public function destroy($id)
     {
-        $item = Listing::find($id);
-        if (!$item) return $this->sendError('Skelbimas nerastas', 404);
+        $deleted = $this->listingService->delete($id);
+        if (!$deleted) return $this->sendError('Listing not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Skelbimas ištrintas.');
+        return $this->sendResponse(null, 'Listing deleted.');
     }
 }

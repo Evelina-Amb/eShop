@@ -2,48 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\City;
-use App\Http\Resources\CityResource;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreCityRequest;
 use App\Http\Requests\UpdateCityRequest;
+use App\Http\Resources\CityResource;
+use App\Services\CityService;
 
 class CityController extends BaseController
 {
+    protected CityService $cityService;
+
+    public function __construct(CityService $cityService)
+    {
+        $this->cityService = $cityService;
+    }
+
     public function index()
     {
-        $items = City::with('country')->get();
-        return $this->sendResponse(CityResource::collection($items), 'Miestai gauti.');
+        $cities = $this->cityService->getAll();
+        return $this->sendResponse(CityResource::collection($cities), 'Cities retrieved.');
     }
 
     public function show($id)
     {
-        $item = City::with('country')->find($id);
-        if (!$miestas) return $this->sendError('Miestas nerastas', 404);
+        $city = $this->cityService->getById($id);
+        if (!$city) return $this->sendError('City not found.', 404);
 
-        return $this->sendResponse(new CityResource($item), 'Miestas rastas.');
+        return $this->sendResponse(new CityResource($city), 'City found.');
     }
 
     public function store(StoreCityRequest $request)
     {
-        $item = City::create($request->validated());
-        return $this->sendResponse(new CityResource($item), 'Miestas sukurtas.', 201);
+        $city = $this->cityService->create($request->validated());
+        return $this->sendResponse(new CityResource($city), 'City created.', 201);
     }
 
     public function update(UpdateCityRequest $request, $id)
     {
-        $item = City::find($id);
-        if (!$item) return $this->sendError('Miestas nerastas', 404);
+        $city = $this->cityService->update($id, $request->validated());
+        if (!$city) return $this->sendError('City not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new CityResource($item), 'Miestas atnaujintas.');
+        return $this->sendResponse(new CityResource($city), 'City updated.');
     }
 
     public function destroy($id)
     {
-        $item = City::find($id);
-        if (!$item) return $this->sendError('Miestas nerastas', 404);
+        $deleted = $this->cityService->delete($id);
+        if (!$deleted) return $this->sendError('City not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Miestas ištrintas.');
+        return $this->sendResponse(null, 'City deleted.');
     }
 }

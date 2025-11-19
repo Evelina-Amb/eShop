@@ -2,51 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\ListingPhoto;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\ListingPhotoResource;
+use App\Services\ListingPhotoService;
 use App\Http\Requests\StoreListingPhotoRequest;
 use App\Http\Requests\UpdateListingPhotoRequest;
 
 class ListingPhotoController extends BaseController
 {
+    protected ListingPhotoService $listingPhotoService;
+
+    public function __construct(ListingPhotoService $listingPhotoService)
+    {
+        $this->listingPhotoService = $listingPhotoService;
+    }
+
     public function index()
     {
-        $items = ListingPhoto::with('Listing')->get();
-        return $this->sendResponse(
-            ListingPhotoResource::collection($items),
-            'Skelbimų nuotraukos gautos.'
-        );
+        $photos = $this->listingPhotoService->getAll();
+        return $this->sendResponse(ListingPhotoResource::collection($photos), 'Listing photos retrieved.');
     }
 
     public function show($id)
     {
-        $item = ListingPhoto::with('Listing')->find($id);
-        if (!$item) return $this->sendError('Nuotrauka nerasta', 404);
+        $photo = $this->listingPhotoService->getById($id);
+        if (!$photo) return $this->sendError('Listing photo not found.', 404);
 
-        return $this->sendResponse(new ListingPhotoResource($item), 'Nuotrauka rasta.');
+        return $this->sendResponse(new ListingPhotoResource($photo), 'Listing photo found.');
     }
 
     public function store(StoreListingPhotoRequest $request)
     {
-        $item = ListingPhoto::create($request->validated());
-        return $this->sendResponse(new ListingPhotoResource($item), 'Nuotrauka įkelta.', 201);
+        $photo = $this->listingPhotoService->create($request->validated());
+        return $this->sendResponse(new ListingPhotoResource($photo), 'Listing photo created.', 201);
     }
 
     public function update(UpdateListingPhotoRequest $request, $id)
     {
-        $item = ListingPhoto::find($id);
-        if (!$item) return $this->sendError('Nuotrauka nerasta', 404);
+        $photo = $this->listingPhotoService->update($id, $request->validated());
+        if (!$photo) return $this->sendError('Listing photo not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new ListingPhotoResource($item), 'Nuotrauka atnaujinta.');
+        return $this->sendResponse(new ListingPhotoResource($photo), 'Listing photo updated.');
     }
 
     public function destroy($id)
     {
-        $item = ListingPhoto::find($id);
-        if (!$item) return $this->sendError('Nuotrauka nerasta', 404);
+        $deleted = $this->listingPhotoService->delete($id);
+        if (!$deleted) return $this->sendError('Listing photo not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Nuotrauka ištrinta.');
+        return $this->sendResponse(null, 'Listing photo deleted.');
     }
 }

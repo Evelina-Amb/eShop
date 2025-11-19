@@ -2,48 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Cart;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\CartResource;
+use App\Services\CartService;
 use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
 
 class CartController extends BaseController
 {
+    protected CartService $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
+
     public function index()
     {
-        $krepselis = Cart::with(['user', 'Listing'])->get();
-        return $this->sendResponse(CartResource::collection($krepselis), 'Krepšelis gautas.');
+        $items = $this->cartService->getAll();
+        return $this->sendResponse(CartResource::collection($items), 'Cart items retrieved.');
     }
 
     public function show($id)
     {
-        $item = Cart::with(['user', 'Listing'])->find($id);
-        if (!$item) return $this->sendError('Krepšelio įrašas nerastas', 404);
+        $item = $this->cartService->getById($id);
+        if (!$item) return $this->sendError('Cart item not found.', 404);
 
-        return $this->sendResponse(new CartResource($item), 'Krepšelio įrašas rastas.');
+        return $this->sendResponse(new CartResource($item), 'Cart item found.');
     }
 
     public function store(StoreCartRequest $request)
     {
-        $item = Cart::create($request->validated());
-        return $this->sendResponse(new CartResource($item), 'Prekė pridėta į krepšelį.', 201);
+        $item = $this->cartService->create($request->validated());
+        return $this->sendResponse(new CartResource($item), 'Cart item created.', 201);
     }
 
     public function update(UpdateCartRequest $request, $id)
     {
-        $item = Cart::find($id);
-        if (!$item) return $this->sendError('Krepšelio įrašas nerastas', 404);
+        $item = $this->cartService->update($id, $request->validated());
+        if (!$item) return $this->sendError('Cart item not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new CartResource($item), 'Krepšelio įrašas atnaujintas.');
+        return $this->sendResponse(new CartResource($item), 'Cart item updated.');
     }
 
     public function destroy($id)
     {
-        $item = Cart::find($id);
-        if (!$item) return $this->sendError('Krepšelio įrašas nerastas', 404);
+        $deleted = $this->cartService->delete($id);
+        if (!$deleted) return $this->sendError('Cart item not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Prekė pašalinta iš krepšelio.');
+        return $this->sendResponse(null, 'Cart item deleted.');
     }
 }

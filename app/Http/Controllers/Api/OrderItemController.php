@@ -2,48 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\OrderItem;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Resources\OrderItemResource;
+use App\Services\OrderItemService;
 use App\Http\Requests\StoreOrderItemRequest;
 use App\Http\Requests\UpdateOrderItemRequest;
 
 class OrderItemController extends BaseController
 {
+    protected OrderItemService $orderItemService;
+
+    public function __construct(OrderItemService $orderItemService)
+    {
+        $this->orderItemService = $orderItemService;
+    }
+
     public function index()
     {
-        $items = OrderItem::with(['Order', 'Listing'])->get();
-        return $this->sendResponse(OrderItemResource::collection($items), 'Pirkimo prekės gautos.');
+        $items = $this->orderItemService->getAll();
+        return $this->sendResponse(OrderItemResource::collection($items), 'Order items retrieved.');
     }
 
     public function show($id)
     {
-        $item = OrderItem::with(['Oreder', 'Listing'])->find($id);
-        if (!$item) return $this->sendError('Pirkimo prekė nerasta', 404);
+        $item = $this->orderItemService->getById($id);
+        if (!$item) return $this->sendError('Order item not found.', 404);
 
-        return $this->sendResponse(new OrderItemResource($item), 'Pirkimo prekė rasta.');
+        return $this->sendResponse(new OrderItemResource($item), 'Order item found.');
     }
 
     public function store(StoreOrderItemRequest $request)
     {
-        $item = OrderItem::create($request->validated());
-        return $this->sendResponse(new OrderItemResource($item), 'Pirkimo prekė pridėta.', 201);
+        $item = $this->orderItemService->create($request->validated());
+        return $this->sendResponse(new OrderItemResource($item), 'Order item created.', 201);
     }
 
     public function update(UpdateOrderItemRequest $request, $id)
     {
-        $item = OrderItem::find($id);
-        if (!$item) return $this->sendError('Pirkimo prekė nerasta', 404);
+        $item = $this->orderItemService->update($id, $request->validated());
+        if (!$item) return $this->sendError('Order item not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new OrderItemResource($item), 'Pirkimo prekė atnaujinta.');
+        return $this->sendResponse(new OrderItemResource($item), 'Order item updated.');
     }
 
     public function destroy($id)
     {
-        $item = OrderItem::find($id);
-        if (!$item) return $this->sendError('Pirkimo prekė nerasta', 404);
+        $deleted = $this->orderItemService->delete($id);
+        if (!$deleted) return $this->sendError('Order item not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Pirkimo prekė ištrinta.');
+        return $this->sendResponse(null, 'Order item deleted.');
     }
 }

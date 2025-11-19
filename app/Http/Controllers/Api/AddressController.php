@@ -2,48 +2,54 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Address;
-use App\Http\Resources\AddressResource;
+use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\UpdateAddressRequest;
+use App\Http\Resources\AddressResource;
+use App\Services\AddressService;
 
 class AddressController extends BaseController
 {
+    protected AddressService $addressService;
+
+    public function __construct(AddressService $addressService)
+    {
+        $this->addressService = $addressService;
+    }
+
     public function index()
     {
-        $items = Address::with('city.country')->get();
-        return $this->sendResponse(AddressResource::collection($items), 'Adresai gauti.');
+        $addresses = $this->addressService->getAll();
+        return $this->sendResponse(AddressResource::collection($addresses), 'Addresses retrieved.');
     }
 
     public function show($id)
     {
-        $item = Address::with('city.country')->find($id);
-        if (!$item) return $this->sendError('Adresas nerastas', 404);
+        $address = $this->addressService->getById($id);
+        if (!$address) return $this->sendError('Address not found.', 404);
 
-        return $this->sendResponse(new AddressResource($item), 'Adresas rastas.');
+        return $this->sendResponse(new AddressResource($address), 'Address found.');
     }
 
     public function store(StoreAddressRequest $request)
     {
-        $item = Address::create($request->validated());
-        return $this->sendResponse(new AddressResource($item), 'Adresas sukurtas.', 201);
+        $address = $this->addressService->create($request->validated());
+        return $this->sendResponse(new AddressResource($address), 'Address created.', 201);
     }
 
     public function update(UpdateAddressRequest $request, $id)
     {
-        $item = Address::find($id);
-        if (!$item) return $this->sendError('Adresas nerastas', 404);
+        $address = $this->addressService->update($id, $request->validated());
+        if (!$address) return $this->sendError('Address not found.', 404);
 
-        $item->update($request->validated());
-        return $this->sendResponse(new AddressResource($item), 'Adresas atnaujintas.');
+        return $this->sendResponse(new AddressResource($address), 'Address updated.');
     }
 
     public function destroy($id)
     {
-        $item = Address::find($id);
-        if (!$item) return $this->sendError('Adresas nerastas', 404);
+        $deleted = $this->addressService->delete($id);
+        if (!$deleted) return $this->sendError('Address not found.', 404);
 
-        $item->delete();
-        return $this->sendResponse(null, 'Adresas ištrintas.');
+        return $this->sendResponse(null, 'Address deleted.');
     }
 }
