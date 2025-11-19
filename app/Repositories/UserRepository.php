@@ -10,12 +10,12 @@ class UserRepository implements UserRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return User::with(['Address', 'Listing', 'Review', 'Cart', 'Favorite', 'Order'])->get();
+        return User::with(['address', 'listing', 'review', 'cart', 'favorite', 'order'])->get();
     }
 
     public function getById(int $id): ?User
     {
-        return User::with(['Address', 'Listing', 'Review', 'Cart', 'Favorite', 'Order'])->find($id);
+        return User::with(['address', 'listing', 'review', 'cart', 'favorite', 'order'])->find($id);
     }
 
     public function create(array $data): User

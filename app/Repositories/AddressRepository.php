@@ -10,12 +10,12 @@ class AddressRepository implements AddressRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Address::with(['City', 'users'])->get();
+        return Address::with(['city', 'users'])->get();
     }
 
     public function getById(int $id): ?Address
     {
-        return Address::with(['City', 'users'])->find($id);
+        return Address::with(['city', 'users'])->find($id);
     }
 
     public function create(array $data): Address

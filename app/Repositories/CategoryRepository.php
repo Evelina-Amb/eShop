@@ -10,12 +10,12 @@ class CategoryRepository implements CategoryRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Category::with('Listing')->get();
+        return Category::with('listing')->get();
     }
 
     public function getById(int $id): ?Category
     {
-        return Category::with('Listing')->find($id);
+        return Category::with('listing')->find($id);
     }
 
     public function create(array $data): Category

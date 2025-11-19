@@ -10,12 +10,12 @@ class ListingRepository implements ListingRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Listing::with(['user', 'Category', 'ListingPhoto'])->get();
+        return Listing::with(['user', 'category', 'listingPhoto'])->get();
     }
 
     public function getById(int $id): ?Listing
     {
-        return Listing::with(['user', 'Category', 'ListingPhoto'])->find($id);
+        return Listing::with(['user', 'category', 'listingPhoto'])->find($id);
     }
 
     public function create(array $data): Listing

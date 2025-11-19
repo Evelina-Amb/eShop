@@ -10,12 +10,12 @@ class CountryRepository implements CountryRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Country::with('City')->get();
+        return Country::with('city')->get();
     }
 
     public function getById(int $id): ?Country
     {
-        return Country::with('City')->find($id);
+        return Country::with('city')->find($id);
     }
 
     public function create(array $data): Country

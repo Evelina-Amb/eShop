@@ -10,12 +10,12 @@ class OrderItemRepository implements OrderItemRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return OrderItem::with(['Order', 'Listing'])->get();
+        return OrderItem::with(['order', 'listing'])->get();
     }
 
     public function getById(int $id): ?OrderItem
     {
-        return OrderItem::with(['Order', 'Listing'])->find($id);
+        return OrderItem::with(['order', 'listing'])->find($id);
     }
 
     public function create(array $data): OrderItem

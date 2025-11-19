@@ -10,12 +10,12 @@ class CartRepository implements CartRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Cart::with(['user', 'Listing'])->get();
+        return Cart::with(['user', 'listing'])->get();
     }
 
     public function getById(int $id): ?Cart
     {
-        return Cart::with(['user', 'Listing'])->find($id);
+        return Cart::with(['user', 'listing'])->find($id);
     }
 
     public function create(array $data): Cart

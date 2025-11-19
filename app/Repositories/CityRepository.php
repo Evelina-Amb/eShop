@@ -10,12 +10,12 @@ class CityRepository implements CityRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return City::with(['country', 'Address'])->get();
+        return City::with(['country', 'address'])->get();
     }
 
     public function getById(int $id): ?City
     {
-        return City::with(['country', 'Address'])->find($id);
+        return City::with(['country', 'address'])->find($id);
     }
 
     public function create(array $data): City

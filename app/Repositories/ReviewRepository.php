@@ -10,12 +10,12 @@ class ReviewRepository implements ReviewRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Review::with(['Listing', 'user'])->get();
+        return Review::with(['listing', 'user'])->get();
     }
 
     public function getById(int $id): ?Review
     {
-        return Review::with(['Listing', 'user'])->find($id);
+        return Review::with(['listing', 'user'])->find($id);
     }
 
     public function create(array $data): Review

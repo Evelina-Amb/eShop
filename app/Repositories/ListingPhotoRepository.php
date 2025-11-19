@@ -10,12 +10,12 @@ class ListingPhotoRepository implements ListingPhotoRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return ListingPhoto::with('Listing')->get();
+        return ListingPhoto::with('listing')->get();
     }
 
     public function getById(int $id): ?ListingPhoto
     {
-        return ListingPhoto::with('Listing')->find($id);
+        return ListingPhoto::with('listing')->find($id);
     }
 
     public function create(array $data): ListingPhoto

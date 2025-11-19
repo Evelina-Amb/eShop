@@ -10,12 +10,12 @@ class FavoriteRepository implements FavoriteRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return Favorite::with(['user', 'Listing'])->get();
+        return Favorite::with(['user', 'listing'])->get();
     }
 
     public function getById(int $id): ?Favorite
     {
-        return Favorite::with(['user', 'Listing'])->find($id);
+        return Favorite::with(['user', 'listing'])->find($id);
     }
 
     public function create(array $data): Favorite
