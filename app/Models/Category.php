@@ -15,6 +15,6 @@ class Category extends Model
 
     public function Listing()
     {
-        return $this->hasMany(Skelbimas::class);
+        return $this->hasMany(Listing::class, 'Category_id');
     }
 }
