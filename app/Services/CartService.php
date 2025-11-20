@@ -25,9 +25,42 @@ class CartService
     }
 
     public function create(array $data)
-    {
-        return $this->cartRepository->create($data);
+{
+    $userId = $data['user_id'];
+    $listingId = $data['listing_id'];
+
+    $listing = \App\Models\Listing::find($listingId);
+
+    if (!$listing) {
+        throw new \Exception("Listing not found");
     }
+
+    //User cannot add their own listing
+    if ($listing->user_id == $userId) {
+        throw new \Exception("You cannot add your own listing to cart");
+    }
+
+    //Cannot add sold or reserved listing
+    if ($listing->statusas === 'parduotas') {
+        throw new \Exception("Listing is already sold");
+    }
+
+    if ($listing->statusas === 'rezervuotas') {
+        throw new \Exception("Listing is reserved and cannot be added");
+    }
+
+    //Prevent duplicates
+    $exists = Cart::where('user_id', $userId)
+                  ->where('listing_id', $listingId)
+                  ->first();
+
+    if ($exists) {
+        throw new \Exception("Listing is already in your cart");
+    }
+
+    return $this->cartRepository->create($data);
+}
+
 
     public function update(int $id, array $data)
     {

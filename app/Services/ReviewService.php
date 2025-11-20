@@ -25,9 +25,43 @@ class ReviewService
     }
 
     public function create(array $data)
-    {
-        return $this->reviewRepository->create($data);
+{
+    $userId = $data['user_id'];
+    $listingId = $data['listing_id'];
+
+    $listing = \App\Models\Listing::find($listingId);
+    if (!$listing) {
+        throw new \Exception("Listing not found");
     }
+
+    //User cannot review own listing
+    if ($listing->user_id == $userId) {
+        throw new \Exception("You cannot review your own listing");
+    }
+
+    //Only one review per listing per user
+    $existingReview = \App\Models\Review::where('listing_id', $listingId)
+                        ->where('user_id', $userId)
+                        ->first();
+
+    if ($existingReview) {
+        throw new \Exception("You have already reviewed this listing");
+    }
+
+    //User must have purchased the listing
+    $hasPurchased = \App\Models\OrderItem::where('listing_id', $listingId)
+                        ->whereHas('order', function ($q) use ($userId) {
+                            $q->where('user_id', $userId);
+                        })
+                        ->exists();
+
+    if (!$hasPurchased) {
+        throw new \Exception("You can only review listings you purchased");
+    }
+
+    //Create review
+    return $this->reviewRepository->create($data);
+}
 
     public function update(int $id, array $data)
     {

@@ -25,9 +25,26 @@ class FavoriteService
     }
 
     public function create(array $data)
-    {
-        return $this->favoriteRepository->create($data);
+{
+    $userId = $data['user_id'];
+    $listingId = $data['listing_id'];
+
+    $listing = \App\Models\Listing::find($listingId);
+    if (!$listing) {
+        throw new \Exception("Listing not found");
     }
+
+    //Prevent duplicates
+    $exists = \App\Models\Favorite::where('user_id', $userId)
+                ->where('listing_id', $listingId)
+                ->exists();
+
+    if ($exists) {
+        throw new \Exception("This listing is already in your favorites.");
+    }
+
+    return $this->favoriteRepository->create($data);
+}
 
     public function update(int $id, array $data)
     {
