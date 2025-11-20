@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreListingRequest;
 use App\Http\Requests\UpdateListingRequest;
@@ -20,8 +21,16 @@ class ListingController extends BaseController
     public function index()
     {
         $listings = $this->listingService->getAll();
-        return $this->sendResponse(ListingResource::collection($listings), 'Listings retrieved.');
+        return $this->sendResponse(ListingResource::collection($listings), 'Lisings retrieved.');
     }
+/////////add auth to fix
+    public function mine(Request $request)
+{
+    $userId = $request->user_id;
+    $listings = $this->listingService->getMine($userId);
+
+    return $this->sendResponse(ListingResource::collection($listings), 'Your listings retrieved.');
+}
 
     public function show($id)
     {
@@ -38,12 +47,16 @@ class ListingController extends BaseController
     }
 
     public function update(UpdateListingRequest $request, $id)
-    {
+{
+    try {
         $listing = $this->listingService->update($id, $request->validated());
-        if (!$listing) return $this->sendError('Listing not found.', 404);
+        if (!$listing) return $this->sendError('Listing not found', 404);
 
         return $this->sendResponse(new ListingResource($listing), 'Listing updated.');
+    } catch (\Exception $e) {
+        return $this->sendError($e->getMessage(), 400);
     }
+}
 
     public function destroy($id)
     {
