@@ -12,8 +12,9 @@ class StoreOrderRequest extends FormRequest
     {
         return [
             'user_id'     => 'required|exists:users,id',
-            'bendra_suma' => 'required|numeric|min:0',
-            'statusas'    => 'required|string|in:completed,canceled,refunded'
+            'items' => 'required|array|min:1',
+            'items.*.listing_id' => 'required|exists:listing,id',
+            'items.*.kiekis'     => 'required|integer|min:1',
         ];
     }
 }
