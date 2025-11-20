@@ -17,7 +17,7 @@ class UserResource extends JsonResource
             'el_pastas'  => $this->el_pastas,
             'telefonas'  => $this->telefonas ?? 'Nenurodytas',
             'role'       => $this->role,
-            'Address'    => new AddressResource($this->whenLoaded('Address')),
+            'address'    => new AddressResource($this->whenLoaded('Address')),
             'sukurta'    => $this->created_at?->format('Y-m-d H:i'),
         ];
     }
