@@ -24,6 +24,18 @@ class CartService
         return $this->cartRepository->getById($id);
     }
 
+    public function clearItem(int $userId, int $listingId)
+{
+    return \App\Models\Cart::where('user_id', $userId)
+                           ->where('listing_id', $listingId)
+                           ->delete();
+}
+
+public function clearAll(int $userId)
+{
+    return \App\Models\Cart::where('user_id', $userId)->delete();
+}
+
     public function create(array $data)
 {
     $userId = $data['user_id'];

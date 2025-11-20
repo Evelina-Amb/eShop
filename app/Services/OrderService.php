@@ -90,10 +90,10 @@ class OrderService
             'statusas' => 'parduotas'
         ]);
     }
-
+//Clear user's cart
+\App\Models\Cart::where('user_id', $userId)->delete();
     return $order->load(['orderItem', 'user']);
 }
-
 
     public function update(int $id, array $data)
     {
