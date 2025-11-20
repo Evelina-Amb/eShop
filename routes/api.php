@@ -6,6 +6,9 @@ use App\Http\Controllers\Api\{
     FavoriteController, OrderController, OrderItemController, 
     UserController, ListingController
 };
+Route::get('/listings/mine', [ListingController::class, 'mine']);
+Route::delete('/cart/item', [CartController::class, 'clearItem']);
+Route::delete('/cart/clear', [CartController::class, 'clearAll']);
 
 Route::apiResources([
     'country' => CountryController::class,
@@ -14,10 +17,11 @@ Route::apiResources([
     'category' => CategoryController::class,
     'listingPhoto' => ListingPhotoController::class,
     'review' => ReviewController::class,
-    'cart' => CartController::class,
     'favorite' => FavoriteController::class,
     'order' => OrderController::class,
     'orderItem' => OrderItemController::class,
     'users' => UserController::class,
     'listing'=> ListingController::class,
 ]);
+
+
