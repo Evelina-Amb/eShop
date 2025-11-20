@@ -16,7 +16,7 @@ class CartResource extends JsonResource
     {
        return [
             'kiekis'   => $this->kiekis,
-            'preke'    => new ListingResource($this->whenLoaded('Listing')),
+            'preke'    => new ListingResource($this->whenLoaded('listing')),
             'vartotojas' => new UserResource($this->whenLoaded('user')),
         ];
     }
