@@ -32,10 +32,15 @@ class ReviewController extends BaseController
     }
 
     public function store(StoreReviewRequest $request)
-    {
+{
+    try {
         $review = $this->reviewService->create($request->validated());
         return $this->sendResponse(new ReviewResource($review), 'Review created.', 201);
     }
+    catch (\Exception $e) {
+        return $this->sendError($e->getMessage(), 400);
+    }
+}
 
     public function update(UpdateReviewRequest $request, $id)
     {

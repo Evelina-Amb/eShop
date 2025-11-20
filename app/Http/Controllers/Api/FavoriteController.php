@@ -32,10 +32,15 @@ class FavoriteController extends BaseController
     }
 
     public function store(StoreFavoriteRequest $request)
-    {
+{
+    try {
         $favorite = $this->favoriteService->create($request->validated());
         return $this->sendResponse(new FavoriteResource($favorite), 'Favorite created.', 201);
+
+    } catch (\Exception $e) {
+        return $this->sendError($e->getMessage(), 400);
     }
+}
 
     public function update(UpdateFavoriteRequest $request, $id)
     {

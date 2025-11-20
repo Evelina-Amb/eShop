@@ -33,16 +33,24 @@ class CartController extends BaseController
 
     public function store(StoreCartRequest $request)
     {
-        $item = $this->cartService->create($request->validated());
-        return $this->sendResponse(new CartResource($item), 'Cart item created.', 201);
+        try {
+            $item = $this->cartService->create($request->validated());
+            return $this->sendResponse(new CartResource($item), 'Cart item created.', 201);
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 400);
+        }
     }
 
     public function update(UpdateCartRequest $request, $id)
     {
-        $item = $this->cartService->update($id, $request->validated());
-        if (!$item) return $this->sendError('Cart item not found.', 404);
+        try {
+            $item = $this->cartService->update($id, $request->validated());
+            if (!$item) return $this->sendError('Cart item not found.', 404);
 
-        return $this->sendResponse(new CartResource($item), 'Cart item updated.');
+            return $this->sendResponse(new CartResource($item), 'Cart item updated.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 400);
+        }
     }
 
     public function destroy($id)

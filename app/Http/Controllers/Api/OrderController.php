@@ -6,44 +6,50 @@ use App\Models\Order;
 use App\Http\Resources\OrderResource;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Services\OrderService;
 
 class OrderController extends BaseController
 {
+    protected OrderService $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
+
     public function index()
     {
-        $items = Order::with(['user', 'OrderItem'])->get();
+        $items = Order::with(['user', 'orderItem'])->get();
         return $this->sendResponse(OrderResource::collection($items), 'Pirkimai gauti.');
     }
 
     public function show($id)
     {
-        $item = Order::with(['user', 'OrderItem'])->find($id);
+        $item = Order::with(['user', 'orderItem'])->find($id);
         if (!$item) return $this->sendError('Pirkimas nerastas', 404);
 
         return $this->sendResponse(new OrderResource($item), 'Pirkimas rastas.');
     }
 
     public function store(StoreOrderRequest $request)
-    {
-        $item = Order::create($request->validated());
-        return $this->sendResponse(new OrderResource($item), 'Pirkimas sukurtas.', 201);
+{
+    try {
+        $order = $this->orderService->create($request->validated());
+        return $this->sendResponse(new OrderResource($order), 'Pirkimas sukurtas.', 201);
+
+    } catch (\Exception $e) {
+        return $this->sendError($e->getMessage(), 400);
     }
+}
 
-    public function update(UpdateOrderRequest $request, $id)
-    {
-        $item = Order::find($id);
-        if (!$item) return $this->sendError('Pirkimas nerastas', 404);
+   public function update()
+{
+    return $this->sendError('Orders cannot be updated.', 403);
+}
 
-        $item->update($request->validated());
-        return $this->sendResponse(new OrderResource($item), 'Pirkimas atnaujintas.');
-    }
+    public function destroy()
+{
+    return $this->sendError('Orders cannot be deleted.', 403);
+}
 
-    public function destroy($id)
-    {
-        $item = Order::find($id);
-        if (!$item) return $this->sendError('Pirkimas nerastas', 404);
-
-        $item->delete();
-        return $this->sendResponse(null, 'Pirkimas ištrintas.');
-    }
 }

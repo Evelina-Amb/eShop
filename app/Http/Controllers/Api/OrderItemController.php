@@ -31,25 +31,19 @@ class OrderItemController extends BaseController
         return $this->sendResponse(new OrderItemResource($item), 'Order item found.');
     }
 
-    public function store(StoreOrderItemRequest $request)
+    public function store()
     {
-        $item = $this->orderItemService->create($request->validated());
-        return $this->sendResponse(new OrderItemResource($item), 'Order item created.', 201);
+        return $this->sendError('Direct creation of order items is not allowed.', 403);
     }
 
-    public function update(UpdateOrderItemRequest $request, $id)
+    public function update()
     {
-        $item = $this->orderItemService->update($id, $request->validated());
-        if (!$item) return $this->sendError('Order item not found.', 404);
-
-        return $this->sendResponse(new OrderItemResource($item), 'Order item updated.');
+        return $this->sendError('Order items cannot be updated manually.', 403);
     }
 
-    public function destroy($id)
+    public function destroy()
     {
-        $deleted = $this->orderItemService->delete($id);
-        if (!$deleted) return $this->sendError('Order item not found.', 404);
-
-        return $this->sendResponse(null, 'Order item deleted.');
+        return $this->sendError('Order items cannot be deleted manually.', 403);
     }
+
 }
