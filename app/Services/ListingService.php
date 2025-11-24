@@ -38,6 +38,11 @@ class ListingService
         return $this->listingRepository->create($data);
     }
 
+    public function search(array $filters)
+{
+    return $this->listingRepository->search($filters);
+}
+
     public function update(int $id, array $data)
 {
     $listing = $this->listingRepository->getById($id);

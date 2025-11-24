@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use Illuminate\Http\Request;
+
 
 class UserService
 {
@@ -44,4 +46,37 @@ class UserService
 
         return $this->userRepository->delete($user);
     }
+
+    public function banUser(int $userId, string $reason = null)
+{
+    $user = \App\Models\User::find($userId);
+    if (!$user) {
+        throw new \Exception("User not found");
+    }
+
+    $user->update([
+        'is_banned' => true,
+        'ban_reason' => $reason,
+        'banned_at' => now()
+    ]);
+
+    return $user;
+}
+
+public function unbanUser(int $userId)
+{
+    $user = \App\Models\User::find($userId);
+    if (!$user) {
+        throw new \Exception("User not found");
+    }
+
+    $user->update([
+        'is_banned' => false,
+        'ban_reason' => null,
+        'banned_at' => null
+    ]);
+
+    return $user;
+}
+
 }
