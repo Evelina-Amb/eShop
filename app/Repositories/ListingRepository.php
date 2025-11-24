@@ -37,6 +37,42 @@ class ListingRepository implements ListingRepositoryInterface
         return Listing::create($data);
     }
 
+    public function search(array $filters): Collection
+{
+    $query = Listing::where('statusas', '!=', 'parduotas')
+                    ->with(['user', 'category', 'listingPhoto']);
+
+    // Keyword search
+    if (!empty($filters['q'])) {
+        $q = $filters['q'];
+        $query->where(function($q2) use ($q) {
+            $q2->where('pavadinimas', 'LIKE', "%{$q}%")
+               ->orWhere('aprasymas', 'LIKE', "%{$q}%");
+        });
+    }
+
+    // Category filter
+    if (!empty($filters['category_id'])) {
+        $query->where('Category_id', $filters['category_id']);
+    }
+
+    // Type filter (preke / paslauga)
+    if (!empty($filters['tipas'])) {
+        $query->where('tipas', $filters['tipas']);
+    }
+
+    // Price range
+    if (!empty($filters['min_price'])) {
+        $query->where('kaina', '>=', $filters['min_price']);
+    }
+
+    if (!empty($filters['max_price'])) {
+        $query->where('kaina', '<=', $filters['max_price']);
+    }
+
+    return $query->get();
+}
+
     public function update(Listing $listing, array $data): Listing
     {
         $listing->update($data);
