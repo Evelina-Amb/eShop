@@ -13,7 +13,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'vardas', 'pavarde', 'el_pastas', 'slaptazodis',
-        'telefonas', 'address_id', 'role'
+        'telefonas', 'address_id', 'role', 'is_banned', 'ban_reason', 'banned_at'
     ];
 
     public function Address()
