@@ -6,8 +6,14 @@ use App\Models\City;
 use App\Repositories\Contracts\CityRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class CityRepository implements CityRepositoryInterface
+class CityRepository extends BaseRepository implements CityRepositoryInterface
 {
+
+    public function __construct(City $model)
+    {
+        parent::__construct($model);
+    }
+
     public function getAll(): Collection
     {
         return City::with(['country', 'address'])->get();
@@ -17,20 +23,4 @@ class CityRepository implements CityRepositoryInterface
     {
         return City::with(['country', 'address'])->find($id);
     }
-
-    public function create(array $data): City
-    {
-        return City::create($data);
-    }
-
-    public function update(City $city, array $data): City
-    {
-        $city->update($data);
-        return $city;
-    }
-
-    public function delete(City $city): bool
-    {
-        return $city->delete();
-    }
-}
+} 

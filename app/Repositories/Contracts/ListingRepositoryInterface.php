@@ -4,12 +4,13 @@ namespace App\Repositories\Contracts;
 
 use App\Models\Listing;
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 interface ListingRepositoryInterface
 {
-    public function getAll(): Collection;
-    public function getById(int $id): ?Listing;
-    public function create(array $data): Listing;
-    public function update(Listing $listing, array $data): Listing;
-    public function delete(Listing $listing): bool;
+    public function getAll();
+    public function getById(int $id);
+    public function create(array $data);
+    public function update($model, array $data);
+    public function delete($model);
 }

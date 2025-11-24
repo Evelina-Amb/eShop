@@ -6,8 +6,13 @@ use App\Models\Review;
 use App\Repositories\Contracts\ReviewRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class ReviewRepository implements ReviewRepositoryInterface
+class ReviewRepository  extends BaseRepository implements ReviewRepositoryInterface
 {
+    public function __construct(Review $model)
+    {
+        parent::__construct($model);
+    }
+
     public function getAll(): Collection
     {
         return Review::with(['listing', 'user'])->get();
@@ -17,20 +22,4 @@ class ReviewRepository implements ReviewRepositoryInterface
     {
         return Review::with(['listing', 'user'])->find($id);
     }
-
-    public function create(array $data): Review
-    {
-        return Review::create($data);
-    }
-
-    public function update(Review $review, array $data): Review
-    {
-        $review->update($data);
-        return $review;
-    }
-
-    public function delete(Review $review): bool
-    {
-        return $review->delete();
-    }
-}
+} 

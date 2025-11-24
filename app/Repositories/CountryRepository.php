@@ -6,8 +6,13 @@ use App\Models\Country;
 use App\Repositories\Contracts\CountryRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class CountryRepository implements CountryRepositoryInterface
+class CountryRepository extends BaseRepository implements CountryRepositoryInterface
 {
+    public function __construct(Country $model)
+    {
+        parent::__construct($model);
+    }
+
     public function getAll(): Collection
     {
         return Country::with('city')->get();
@@ -16,21 +21,5 @@ class CountryRepository implements CountryRepositoryInterface
     public function getById(int $id): ?Country
     {
         return Country::with('city')->find($id);
-    }
-
-    public function create(array $data): Country
-    {
-        return Country::create($data);
-    }
-
-    public function update(Country $country, array $data): Country
-    {
-        $country->update($data);
-        return $country;
-    }
-
-    public function delete(Country $country): bool
-    {
-        return $country->delete();
     }
 }

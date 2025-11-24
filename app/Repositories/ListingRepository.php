@@ -6,12 +6,12 @@ use App\Models\Listing;
 use App\Repositories\Contracts\ListingRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class ListingRepository implements ListingRepositoryInterface
+class ListingRepository extends BaseRepository implements ListingRepositoryInterface
 {
-    public function getAll(): Collection
-    {
-        return Listing::with(['user', 'category', 'listingPhoto'])->get();
-    }
+    public function __construct(Listing $model)
+{
+    parent::__construct($model);
+}
 
     public function getPublic(): Collection
     {
@@ -26,16 +26,6 @@ class ListingRepository implements ListingRepositoryInterface
                   ->with(['category', 'listingPhoto'])
                   ->get();
 }
-
-    public function getById(int $id): ?Listing
-    {
-        return Listing::with(['user', 'category', 'listingPhoto'])->find($id);
-    }
-
-    public function create(array $data): Listing
-    {
-        return Listing::create($data);
-    }
 
     public function search(array $filters): Collection
 {
@@ -73,14 +63,4 @@ class ListingRepository implements ListingRepositoryInterface
     return $query->get();
 }
 
-    public function update(Listing $listing, array $data): Listing
-    {
-        $listing->update($data);
-        return $listing;
-    }
-
-    public function delete(Listing $listing): bool
-    {
-        return $listing->delete();
-    }
 }

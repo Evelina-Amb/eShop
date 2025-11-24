@@ -6,8 +6,13 @@ use App\Models\Favorite;
 use App\Repositories\Contracts\FavoriteRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class FavoriteRepository implements FavoriteRepositoryInterface
+class FavoriteRepository extends BaseRepository implements FavoriteRepositoryInterface
 {
+    public function __construct(Favorite $model)
+    {
+        parent::__construct($model);
+    }
+    
     public function getAll(): Collection
     {
         return Favorite::with(['user', 'listing'])->get();
@@ -18,19 +23,4 @@ class FavoriteRepository implements FavoriteRepositoryInterface
         return Favorite::with(['user', 'listing'])->find($id);
     }
 
-    public function create(array $data): Favorite
-    {
-        return Favorite::create($data);
-    }
-
-    public function update(Favorite $favorite, array $data): Favorite
-    {
-        $favorite->update($data);
-        return $favorite;
-    }
-
-    public function delete(Favorite $favorite): bool
-    {
-        return $favorite->delete();
-    }
-}
+} 

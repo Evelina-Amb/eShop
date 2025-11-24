@@ -2,14 +2,11 @@
 
 namespace App\Repositories\Contracts;
 
-use App\Models\Category;
-use Illuminate\Support\Collection;
-
 interface CategoryRepositoryInterface
 {
-    public function getAll(): Collection;
-    public function getById(int $id): ?Category;
-    public function create(array $data): Category;
-    public function update(Category $category, array $data): Category;
-    public function delete(Category $category): bool;
+    public function getAll();
+    public function getById(int $id);
+    public function create(array $data);
+    public function update($model, array $data);
+    public function delete($model);
 }
