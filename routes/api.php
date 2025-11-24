@@ -22,6 +22,7 @@ Route::apiResources([
     'category' => CategoryController::class,
     'listingPhoto' => ListingPhotoController::class,
     'review' => ReviewController::class,
+    'cart' => CartController::class,
     'favorite' => FavoriteController::class,
     'order' => OrderController::class,
     'orderItem' => OrderItemController::class,
