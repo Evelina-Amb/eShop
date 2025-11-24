@@ -7,6 +7,8 @@ use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends BaseController
 {
@@ -52,4 +54,36 @@ class UserController extends BaseController
 
         return $this->sendResponse(null, 'User deleted.');
     }
+
+    public function ban(Request $request, $id)
+{
+    $user = User::find($id);
+    if (!$user) {
+        return $this->sendError('User not found.', 404);
+    }
+
+    $user->update([
+        'is_banned' => true,
+        'ban_reason' => $request->reason ?? 'No reason provided',
+        'banned_at' => now()
+    ]);
+
+    return $this->sendResponse(new UserResource($user), 'User banned.');
+}
+
+public function unban($id)
+{
+    $user = User::find($id);
+    if (!$user) {
+        return $this->sendError('User not found.', 404);
+    }
+
+    $user->update([
+        'is_banned' => false,
+        'ban_reason' => null,
+        'banned_at' => null
+    ]);
+
+    return $this->sendResponse(new UserResource($user), 'User unbanned.');
+}
 }

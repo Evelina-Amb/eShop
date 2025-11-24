@@ -46,6 +46,18 @@ class ListingController extends BaseController
         return $this->sendResponse(new ListingResource($listing), 'Listing created.', 201);
     }
 
+    public function search(Request $request)
+{
+    $filters = $request->only(['q', 'category_id', 'tipas', 'min_price', 'max_price']);
+
+    $results = $this->listingService->search($filters);
+
+    return $this->sendResponse(
+        ListingResource::collection($results),
+        'Search results retrieved.'
+    );
+}
+
     public function update(UpdateListingRequest $request, $id)
 {
     try {
