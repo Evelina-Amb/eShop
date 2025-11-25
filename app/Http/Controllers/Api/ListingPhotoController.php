@@ -7,7 +7,7 @@ use App\Http\Resources\ListingPhotoResource;
 use App\Services\ListingPhotoService;
 use App\Http\Requests\StoreListingPhotoRequest;
 use App\Http\Requests\UpdateListingPhotoRequest;
-use App\Http\Resources\ListingPhotoCollection;
+use App\Http\Resources\BaseCollection;
 
 class ListingPhotoController extends BaseController
 {
@@ -21,7 +21,7 @@ class ListingPhotoController extends BaseController
     public function index()
     {
         $photos = $this->listingPhotoService->getAll();
-        return $this->sendResponse(new ListingPhotoCollection($photos), 'Listing photos retrieved.');
+        return $this->sendResponse(new BaseCollection($photos, ListingPhotoResource::class), 'Listing photos retrieved.');
     }
 
     public function show($id)

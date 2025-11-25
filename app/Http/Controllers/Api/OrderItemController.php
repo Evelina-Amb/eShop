@@ -7,7 +7,7 @@ use App\Http\Resources\OrderItemResource;
 use App\Services\OrderItemService;
 use App\Http\Requests\StoreOrderItemRequest;
 use App\Http\Requests\UpdateOrderItemRequest;
-use App\Http\Resources\OrderItemCollection;
+use App\Http\Resources\BaseCollection;
 
 class OrderItemController extends BaseController
 {
@@ -20,8 +20,8 @@ class OrderItemController extends BaseController
 
     public function index()
     {
-        $items = $this->orderItemService->getAll();
-        return $this->sendResponse(new OrderItemCollection($items), 'Order items retrieved.');
+        $OrderItems = $this->orderItemService->getAll();
+        return $this->sendResponse(new BaseCollection($OrderItems, OrderItemResource::class), 'Order items retrieved.');
     }
 
     public function show($id)

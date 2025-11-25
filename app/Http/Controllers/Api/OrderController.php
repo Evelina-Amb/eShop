@@ -6,7 +6,7 @@ use App\Models\Order;
 use App\Http\Resources\OrderResource;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
-use App\Http\Resources\OrderCollection;
+use App\Http\Resources\BaseCollection;
 use App\Services\OrderService;
 
 class OrderController extends BaseController
@@ -20,8 +20,8 @@ class OrderController extends BaseController
 
     public function index()
     {
-        $items = Order::with(['user', 'orderItem'])->get();
-        return $this->sendResponse(new OrderCollection($items),  'Pirkimai gauti.');
+        $orders = Order::with(['user', 'orderItem'])->get();
+        return $this->sendResponse(new BaseCollection($orders,  OrderResource::class),  'Pirkimai gauti.');
     }
 
     public function show($id)

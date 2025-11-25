@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreCityRequest;
 use App\Http\Requests\UpdateCityRequest;
 use App\Http\Resources\CityResource;
-use App\Http\Resources\CityCollection;
+use App\Http\Resources\BaseCollection;
 use App\Services\CityService;
 
 class CityController extends BaseController
@@ -21,7 +21,7 @@ class CityController extends BaseController
     public function index()
     {
         $cities = $this->cityService->getAll();
-        return $this->sendResponse(new CityCollection($cities), 'Cities retrieved.');
+        return $this->sendResponse(new BaseCollection($cities, CityResource::class), 'Cities retrieved.');
     }
 
     public function show($id)
