@@ -7,6 +7,7 @@ use App\Http\Resources\ReviewResource;
 use App\Services\ReviewService;
 use App\Http\Requests\StoreReviewRequest;
 use App\Http\Requests\UpdateReviewRequest;
+use App\Http\Resources\ReviewCollection;
 
 class ReviewController extends BaseController
 {
@@ -20,7 +21,7 @@ class ReviewController extends BaseController
     public function index()
     {
         $reviews = $this->reviewService->getAll();
-        return $this->sendResponse(ReviewResource::collection($reviews), 'Reviews retrieved.');
+         return $this->sendResponse(new ReviewCollection($reviews),'Reviews retrieved.');
     }
 
     public function show($id)

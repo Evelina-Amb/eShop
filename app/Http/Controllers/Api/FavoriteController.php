@@ -7,6 +7,7 @@ use App\Http\Resources\FavoriteResource;
 use App\Services\FavoriteService;
 use App\Http\Requests\StoreFavoriteRequest;
 use App\Http\Requests\UpdateFavoriteRequest;
+use App\Http\Resources\FavoriteCollection;
 
 class FavoriteController extends BaseController
 {
@@ -20,7 +21,7 @@ class FavoriteController extends BaseController
     public function index()
     {
         $favorites = $this->favoriteService->getAll();
-        return $this->sendResponse(FavoriteResource::collection($favorites), 'Favorites retrieved.');
+        return $this->sendResponse(new FavoriteCollection($favorites), 'Favorites retrieved.');
     }
 
     public function show($id)

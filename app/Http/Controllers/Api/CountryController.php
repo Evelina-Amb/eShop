@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreCountryRequest;
 use App\Http\Requests\UpdateCountryRequest;
 use App\Http\Resources\CountryResource;
+use App\Http\Resources\CountryCollection;
 use App\Services\CountryService;
 
 class CountryController extends BaseController
@@ -16,11 +17,11 @@ class CountryController extends BaseController
     {
         $this->countryService = $countryService;
     }
-
+ 
     public function index()
     {
         $countries = $this->countryService->getAll();
-        return $this->sendResponse(CountryResource::collection($countries), 'Countries retrieved.');
+        return $this->sendResponse(new CountryCollection($countries), 'Countries retrieved.');
     }
 
     public function show($id)

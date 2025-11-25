@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,7 @@ class UserController extends BaseController
     public function index()
     {
         $users = $this->userService->getAll();
-        return $this->sendResponse(UserResource::collection($users), 'Users retrieved.');
+        return $this->sendResponse(new UserCollection($users), 'Users retrieved.');
     }
 
     public function show($id)

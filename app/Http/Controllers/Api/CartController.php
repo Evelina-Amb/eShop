@@ -7,6 +7,7 @@ use App\Http\Resources\CartResource;
 use App\Services\CartService;
 use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
+use App\Http\Resources\CartCollection;
 use Illuminate\Http\Request;
 
 class CartController extends BaseController
@@ -21,7 +22,7 @@ class CartController extends BaseController
     public function index()
     {
         $items = $this->cartService->getAll();
-        return $this->sendResponse(CartResource::collection($items), 'Cart items retrieved.');
+        return $this->sendResponse(new CartCollection($items), 'Cart items retrieved.');
     }
 
     public function show($id)

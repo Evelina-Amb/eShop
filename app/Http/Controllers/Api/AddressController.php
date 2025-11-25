@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreAddressRequest;
 use App\Http\Requests\UpdateAddressRequest;
 use App\Http\Resources\AddressResource;
+use App\Http\Resources\AddressCollection;
 use App\Services\AddressService;
 
 class AddressController extends BaseController
@@ -20,7 +21,7 @@ class AddressController extends BaseController
     public function index()
     {
         $addresses = $this->addressService->getAll();
-        return $this->sendResponse(AddressResource::collection($addresses), 'Addresses retrieved.');
+        return $this->sendResponse(new AddressCollection($addresses), 'Addresses retrieved.');
     }
 
     public function show($id)

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\CategoryCollection;
 use App\Services\CategoryService;
 
 class CategoryController extends BaseController
@@ -20,7 +21,7 @@ class CategoryController extends BaseController
     public function index()
     {
         $categories = $this->categoryService->getAll();
-        return $this->sendResponse(CategoryResource::collection($categories), 'Categories retrieved.');
+        return $this->sendResponse(new CategoryCollection($categories), 'Categories retrieved.');
     }
 
     public function show($id)

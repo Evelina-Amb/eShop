@@ -7,6 +7,7 @@ use App\Http\Resources\OrderItemResource;
 use App\Services\OrderItemService;
 use App\Http\Requests\StoreOrderItemRequest;
 use App\Http\Requests\UpdateOrderItemRequest;
+use App\Http\Resources\OrderItemCollection;
 
 class OrderItemController extends BaseController
 {
@@ -20,7 +21,7 @@ class OrderItemController extends BaseController
     public function index()
     {
         $items = $this->orderItemService->getAll();
-        return $this->sendResponse(OrderItemResource::collection($items), 'Order items retrieved.');
+        return $this->sendResponse(new OrderItemCollection($items), 'Order items retrieved.');
     }
 
     public function show($id)
