@@ -16,7 +16,9 @@ return new class extends Migration {
             $table->unsignedBigInteger('address_id')->nullable();
             $table->string('role', 20)->default('pirkejas');
             $table->timestamps();
-           $table->foreign('address_id')->references('id')->on('address')->onDelete('cascade');
+            $table->rememberToken();
+            $table->foreign('address_id')->references('id')->on('address')->onDelete('cascade');
+           
         });
     }
 
