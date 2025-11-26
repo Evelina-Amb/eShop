@@ -16,6 +16,21 @@ class User extends Authenticatable
         'telefonas', 'address_id', 'role', 'is_banned', 'ban_reason', 'banned_at'
     ];
 
+    protected $hidden = [
+        'slaptazodis',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'slaptazodis' => 'hashed',
+        'banned_at' => 'datetime',
+    ];
+
+    public function getAuthPassword()
+    {
+        return $this->slaptazodis;
+    }
+
     public function Address()
     {
         return $this->belongsTo(Address::class);
