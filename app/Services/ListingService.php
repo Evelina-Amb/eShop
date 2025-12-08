@@ -29,49 +29,80 @@ class ListingService
         return $this->listingRepository->getById($id);
     }
 
+    public function getByIds(array $ids)
+    {
+        return $this->listingRepository->getByIds($ids);
+    }
+
     public function create(array $data)
     {
-    //default status
+        // Default status
         if (empty($data['statusas'])) {
             $data['statusas'] = 'aktyvus';
         }
+
         return $this->listingRepository->create($data);
     }
 
     public function search(array $filters)
-{
-    return $this->listingRepository->search($filters);
-}
+    {
+        return $this->listingRepository->search($filters);
+    }
 
     public function update(int $id, array $data)
-{
-    $listing = $this->listingRepository->getById($id);
-    if (!$listing) {
-        return null;
-    }
+    {
+        $listing = $this->listingRepository->getById($id);
 
-    //Prevent editing sold listings
-    if ($listing->statusas === 'parduotas') {
-        throw new \Exception('Negalima redaguoti parduoto skelbimo.');
-    }
+        if (!$listing) {
+            return null;
+        }
 
-    return $this->listingRepository->update($listing, $data);
-}
+        // Prevent editing sold listings
+        if ($listing->statusas === 'parduotas') {
+            throw new \Exception('Negalima redaguoti parduoto skelbimo.');
+        }
+
+        // Prevent service listings from ever becoming "parduotas"
+        if (
+            $listing->tipas === 'paslauga' &&
+            isset($data['statusas']) &&
+            $data['statusas'] === 'parduotas'
+        ) {
+            throw new \Exception('Services cannot be marked as sold.');
+        }
+
+        // Ensure quantity + renewable flag update
+        $allowedFields = [
+            'pavadinimas',
+            'aprasymas',
+            'kaina',
+            'tipas',
+            'category_id',
+            'kiekis',
+            'is_renewable',
+        ];
+
+        $updateData = array_intersect_key($data, array_flip($allowedFields));
+
+        return $this->listingRepository->update($listing, $updateData);
+    }
 
     public function delete(int $id)
-{
-    $listing = $this->listingRepository->getById($id);
-    if (!$listing) {
-        return false;
+    {
+        $listing = $this->listingRepository->getById($id);
+
+        if (!$listing) {
+            return false;
+        }
+
+        // If listing is sold hidde but NOT delete
+        if ($listing->statusas === 'parduotas') {
+            $listing->is_hidden = true;
+            $listing->save();
+            return true;
+        }
+
+        // If not sold delete
+        return $this->listingRepository->delete($listing);
     }
-
-    //If listing is sold simulate "hiden" but do NOT delete
-    if ($listing->statusas === 'parduotas') {
-        return true;
-    }
-
-    //If not sold delete normally
-    return $this->listingRepository->delete($listing);
-}
-
 }
