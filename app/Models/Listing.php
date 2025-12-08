@@ -13,7 +13,8 @@ class Listing extends Model
 
     protected $fillable = [
         'pavadinimas', 'aprasymas', 'kaina', 'tipas',
-        'user_id', 'category_id', 'statusas'
+        'user_id', 'category_id', 'statusas', 'is_hidden', 
+        'kiekis', 'is_renewable',
     ];
 
     public function user()
@@ -34,5 +35,10 @@ class Listing extends Model
     public function Review()
     {
         return $this->hasMany(Review::class, 'listing_id', 'id');
+    }
+
+    public function averageRating()
+    {
+        return $this->review()->avg('ivertinimas');
     }
 }

@@ -21,7 +21,7 @@ class ReviewController extends BaseController
     public function index()
     {
         $reviews = $this->reviewService->getAll();
-         return $this->sendResponse(new BaseCollection($reviews, ReviewResource::class),'Reviews retrieved.');
+        return $this->sendResponse(new BaseCollection($reviews, ReviewResource::class),'Reviews retrieved.');
     }
 
     public function show($id)
@@ -33,15 +33,15 @@ class ReviewController extends BaseController
     }
 
     public function store(StoreReviewRequest $request)
-{
-    try {
-        $review = $this->reviewService->create($request->validated());
-        return $this->sendResponse(new ReviewResource($review), 'Review created.', 201);
+    {
+        try {
+            $review = $this->reviewService->create($request->validated());
+            return $this->sendResponse(new ReviewResource($review), 'Review created.', 201);
+        }
+        catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 400);
+        }
     }
-    catch (\Exception $e) {
-        return $this->sendError($e->getMessage(), 400);
-    }
-}
 
     public function update(UpdateReviewRequest $request, $id)
     {

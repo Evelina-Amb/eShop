@@ -5,18 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'vardas', 'pavarde', 'el_pastas', 'slaptazodis',
-        'telefonas', 'address_id', 'role', 'is_banned', 'ban_reason', 'banned_at'
+        'telefonas', 'address_id', 'role', 'is_banned', 'ban_reason', 'banned_at', 'business_email',
     ];
 
     protected $hidden = [
+
         'slaptazodis',
         'remember_token',
     ];
@@ -41,6 +43,11 @@ class User extends Authenticatable
         return $this->hasMany(Listing::class);
     }
 
+    public function listings()
+    {
+        return $this->Listing();
+    }
+
     public function Review()
     {
         return $this->hasMany(Review::class);
@@ -60,4 +67,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+
+    public function getEmailForPasswordReset()
+    {
+        return $this->el_pastas;
+    }
+
+    public function routeNotificationForMail()
+    {
+        return $this->el_pastas;
+    }
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetPasswordNotification($token));
+    }
+
 }

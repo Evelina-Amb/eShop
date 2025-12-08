@@ -18,19 +18,35 @@ class ListingController extends BaseController
         $this->listingService = $listingService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $listings = $this->listingService->getAll();
-        return $this->sendResponse(ListingResource::collection($listings), 'Lisings retrieved.');
-    }
-/////////add auth to fix
-    public function mine(Request $request)
-{
-    $userId = $request->user_id;
-    $listings = $this->listingService->getMine($userId);
+        // Favorites
+        if ($request->has('ids')) {
+            $ids = explode(',', $request->ids);
+            $listings = $this->listingService->getByIds($ids);
 
-    return $this->sendResponse(ListingResource::collection($listings), 'Your listings retrieved.');
-}
+            return $this->sendResponse(
+                ListingResource::collection($listings),
+                'Favorites retrieved.'
+            );
+        }
+
+        // Default: all listings
+        $listings = $this->listingService->getAll();
+
+        return $this->sendResponse(
+            ListingResource::collection($listings),
+            'Listings retrieved.'
+        );
+    }
+
+    public function mine(Request $request)
+    {
+        $userId = $request->user_id;
+        $listings = $this->listingService->getMine($userId);
+
+        return $this->sendResponse(ListingResource::collection($listings), 'Your listings retrieved.');
+    }
 
     public function show($id)
     {
@@ -47,28 +63,24 @@ class ListingController extends BaseController
     }
 
     public function search(Request $request)
-{
-    $filters = $request->only(['q', 'category_id', 'tipas', 'min_price', 'max_price']);
+    {
+        $filters = $request->only(['q', 'category_id', 'tipas', 'min_price', 'max_price', 'sort']);
+        $results = $this->listingService->search($filters);
 
-    $results = $this->listingService->search($filters);
-
-    return $this->sendResponse(
-        ListingResource::collection($results),
-        'Search results retrieved.'
-    );
-}
+        return $this->sendResponse(ListingResource::collection($results), 'Search results retrieved.');
+    }
 
     public function update(UpdateListingRequest $request, $id)
-{
-    try {
-        $listing = $this->listingService->update($id, $request->validated());
-        if (!$listing) return $this->sendError('Listing not found', 404);
+    {
+        try {
+            $listing = $this->listingService->update($id, $request->validated());
+            if (!$listing) return $this->sendError('Listing not found', 404);
 
-        return $this->sendResponse(new ListingResource($listing), 'Listing updated.');
-    } catch (\Exception $e) {
-        return $this->sendError($e->getMessage(), 400);
+            return $this->sendResponse(new ListingResource($listing), 'Listing updated.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 400);
+        }
     }
-}
 
     public function destroy($id)
     {

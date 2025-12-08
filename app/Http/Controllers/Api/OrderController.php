@@ -33,24 +33,24 @@ class OrderController extends BaseController
     }
 
     public function store(StoreOrderRequest $request)
-{
-    try {
-        $order = $this->orderService->create($request->validated());
-        return $this->sendResponse(new OrderResource($order), 'Pirkimas sukurtas.', 201);
+    {
+        try {
+            $order = $this->orderService->create($request->validated());
+            return $this->sendResponse(new OrderResource($order), 'Pirkimas sukurtas.', 201);
 
-    } catch (\Exception $e) {
-        return $this->sendError($e->getMessage(), 400);
+            } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 400);
+        }
     }
-}
 
-   public function update()
-{
-    return $this->sendError('Orders cannot be updated.', 403);
-}
+    public function update()
+    {
+        return $this->sendError('Orders cannot be updated.', 403);
+    }
 
     public function destroy()
-{
-    return $this->sendError('Orders cannot be deleted.', 403);
-}
+    {
+        return $this->sendError('Orders cannot be deleted.', 403);
+    }
 
 }

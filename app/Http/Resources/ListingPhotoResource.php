@@ -12,10 +12,12 @@ class ListingPhotoResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
-    {
-        return [
-            'url' => $this->failo_url,
-        ];
-    }
+    public function toArray($request)
+{
+    return [
+        'id' => $this->id,
+        'failo_url' => $this->failo_url,
+        'listing_id' => $this->listing_id,
+    ];
+}
 }

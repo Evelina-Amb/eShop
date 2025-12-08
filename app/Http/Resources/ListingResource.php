@@ -12,18 +12,36 @@ class ListingResource extends JsonResource
      *
      *
      */
-    public function toArray(Request $request): array
-    {
-       return [
-            'pavadinimas' => $this->pavadinimas,
-            'aprasymas'   => $this->aprasymas,
-            'kaina'       => (float) $this->kaina,
-            'tipas'       => $this->tipas,
-            'statusas'    => $this->statusas,
-            'kategorija'  => new CategoryResource($this->whenLoaded('Category')),
-            'pardavejas'  => new UserResource($this->whenLoaded('user')),
-            'nuotraukos'  => ListingPhotoResource::collection($this->whenLoaded('ListingPhoto')),
-            'sukurta'     => $this->created_at?->format('Y-m-d H:i'),
-        ];
-    }
+    public function toArray($request)
+{
+    return [
+        'id' => $this->id,
+
+        'pavadinimas' => $this->pavadinimas,
+        'aprasymas' => $this->aprasymas,
+        'kaina' => $this->kaina,
+        'tipas' => $this->tipas,
+        'statusas' => $this->statusas,
+
+         'listing_photo' => $this->ListingPhoto->map(function ($photo) {
+                return [
+                    'id'        => $photo->id,
+                    'failo_url' => $photo->failo_url,
+                ];
+            }),
+
+        'pardavejas' => [
+            'id' => $this->user->id ?? null,
+            'vardas' => $this->user->name ?? null,
+            'pavarde' => $this->user->surname ?? null,
+            'el_pastas' => $this->user->email ?? null,
+            'telefonas' => $this->user->phone ?? null,
+            'role' => $this->user->role ?? null,
+            'sukurta' => $this->user->created_at ?? null,
+        ],
+
+        'sukurta' => $this->created_at,
+    ];
+}
+
 }

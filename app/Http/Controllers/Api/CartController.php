@@ -28,7 +28,9 @@ class CartController extends BaseController
     public function show($id)
     {
         $item = $this->cartService->getById($id);
-        if (!$item) return $this->sendError('Cart item not found.', 404);
+        if (!$item) {
+            return $this->sendError('Cart item not found.', 404);
+        }
 
         return $this->sendResponse(new CartResource($item), 'Cart item found.');
     }
@@ -47,7 +49,9 @@ class CartController extends BaseController
     {
         try {
             $item = $this->cartService->update($id, $request->validated());
-            if (!$item) return $this->sendError('Cart item not found.', 404);
+            if (!$item) {
+                return $this->sendError('Cart item not found.', 404);
+            }
 
             return $this->sendResponse(new CartResource($item), 'Cart item updated.');
         } catch (\Exception $e) {
@@ -55,37 +59,40 @@ class CartController extends BaseController
         }
     }
 
-public function clearItem(Request $request)
-{
-    $userId = $request->user_id;
-    $listingId = $request->listing_id;
+    public function clearItem(Request $request)
+    {
+        $userId    = $request->user_id;
+        $listingId = $request->listing_id;
 
-    if (!$userId || !$listingId) {
-        return $this->sendError('user_id and listing_id are required', 400);
+        if (!$userId || !$listingId) {
+            return $this->sendError('user_id and listing_id are required', 400);
+        }
+
+        $deleted = $this->cartService->clearItem($userId, $listingId);
+
+        return $this->sendResponse($deleted, 'Item removed from cart.');
     }
 
-    $deleted = $this->cartService->clearItem($userId, $listingId);
+    public function clearAll(Request $request)
+    {
+        $userId = $request->user_id;
 
-    return $this->sendResponse($deleted, 'Item removed from cart.');
-}
+        if (!$userId) {
+            return $this->sendError('user_id is required', 400);
+        }
 
-public function clearAll(Request $request)
-{
-    $userId = $request->user_id;
+        $deleted = $this->cartService->clearAll($userId);
 
-    if (!$userId) {
-        return $this->sendError('user_id is required', 400);
+        return $this->sendResponse($deleted, 'Cart cleared.');
     }
 
-    $deleted = $this->cartService->clearAll($userId);
-
-    return $this->sendResponse($deleted, 'Cart cleared.');
-}
-    
     public function destroy($id)
     {
         $deleted = $this->cartService->delete($id);
-        if (!$deleted) return $this->sendError('Cart item not found.', 404);
+
+        if (!$deleted) {
+            return $this->sendError('Cart item not found.', 404);
+        }
 
         return $this->sendResponse(null, 'Cart item deleted.');
     }

@@ -37,7 +37,7 @@ public function store(Request $request)
 
     $request->session()->regenerate();
 
-    return redirect()->intended('dashboard');
+    return redirect()->intended('/');
 }
     /**
      * Destroy an authenticated session.
