@@ -1,32 +1,49 @@
-@extends('layouts.app')
+<x-app-layout>
 
-@section('content')
-<div class="container mx-auto mt-8">
+    <div class="container mx-auto px-4 mt-8">
+        <!-- Listing Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-    <h1 class="text-3xl font-bold mb-6">Naujausi skelbimai</h1>
+            @forelse ($listings as $item)
+                <div class="bg-white shadow rounded overflow-hidden hover:shadow-lg transition">
+                    <div class="relative">
 
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        @foreach($listings as $item)
-            <div class="border rounded-lg shadow p-4 hover:shadow-lg transition">
-                <img 
-                    src="{{ $item['photo_url'] ?? 'https://via.placeholder.com/300' }}" 
-                    alt="" 
-                    class="w-full h-40 object-cover rounded"
-                >
+                        <img src="{{ $item->ListingPhoto->first()?->failo_url ?? 'https://via.placeholder.com/300' }}" class="w-full h-48 object-cover">
+                        <button
+                            @click="Alpine.store('favorites').toggle({{ $item->id }})"
+                            class="absolute top-2 right-2">
+                            <span x-show="Alpine.store('favorites').list.includes({{ $item->id }})"
+                                class="text-red-500 text-2xl">♥️</span>
 
-                <h2 class="text-xl font-semibold mt-2">
-                    {{ $item['title'] }}
-                </h2>
+                            <span x-show="!Alpine.store('favorites').list.includes({{ $item->id }})" class="text-gray-200 drop-shadow-lg text-[30px] leading-none">🤍</span>
+                        </button>
+                    </div>
 
-                <p class="text-gray-600 text-sm">{{ $item['description'] }}</p>
+                    <div class="p-4">
+                        <h2 class="text-lg font-semibold mb-1">
+                            {{ $item->pavadinimas }}
+                        </h2>
 
-                <div class="flex justify-between items-center mt-3">
-                    <span class="font-bold text-green-600">{{ $item['price'] }} €</span>
-                    <a href="/listing/{{ $item['id'] }}" class="text-blue-600">Plačiau →</a>
+                        <p class="text-gray-500 text-sm line-clamp-2">
+                            {{ $item->aprasymas }}
+                        </p>
+
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-green-600 font-bold text-lg">
+                                {{ $item->kaina }} €
+                            </span>
+
+                            <a href="/listing/{{ $item->id }}" class="text-blue-600 font-semibold">More →</a>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-        @endforeach
+            @empty
+                <p class="text-gray-600 text-center">No listings found</p>
+            @endforelse
+
+        </div>
+
     </div>
 
-</div>
-@endsection
+</x-app-layout>
