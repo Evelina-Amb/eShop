@@ -7,23 +7,9 @@
             <p class="text-gray-600">You haven't posted any listings yet.</p>
         @endif
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-            x-data="{
-                listings: {{ $listings->toJson() }},
-
-                deleteListing(id) {
-                    if (!confirm('Are you sure you want to delete this listing?')) return;
-
-                    fetch('/api/listing/' + id, {
-                        method: 'DELETE',
-                        headers: { 'Accept': 'application/json' }
-                    })
-                    .then(res => res.json())
-                    .then(() => {
-                        this.listings = this.listings.filter(l => l.id !== id);
-                    });
-                }
-            }">
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            x-data="myListingsComponent({{ $listings->toJson() }})">
 
             <template x-for="item in listings" :key="item.id">
                 <div class="bg-white shadow rounded overflow-hidden">
@@ -57,10 +43,6 @@
                                     <span
                                         :class="item.kiekis == 0 ? 'text-red-600 font-bold' : ''"
                                         x-text="item.kiekis"></span>
-
-                                    <template x-if="item.is_renewable == 1">
-                                        <span class="text-green-600 ml-1">(renewable)</span>
-                                    </template>
                                 </div>
                             </template>
                         </div>
@@ -83,4 +65,39 @@
 
         </div>
     </div>
+<!-- Alpine Delete Logic -->
+    <script>
+        function myListingsComponent(initialListings) {
+            return {
+                listings: initialListings,
+
+                getCSRFToken() {
+                    return document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1];
+                },
+
+                deleteListing(id) {
+                    if (!confirm('Ar tikrai norite ištrinti šį skelbimą?')) return;
+
+                    const token = this.getCSRFToken();
+
+                    fetch('/api/listing/' + id, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-XSRF-TOKEN': decodeURIComponent(token)
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        this.listings = this.listings.filter(l => l.id !== id);
+                    })
+                    .catch(err => console.error('Delete failed:', err));
+                }
+            }
+        }
+    </script>
 </x-app-layout>
