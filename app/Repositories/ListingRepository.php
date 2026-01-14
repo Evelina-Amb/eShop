@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Listing;
 use App\Repositories\Contracts\ListingRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class ListingRepository implements ListingRepositoryInterface
 {
@@ -45,10 +46,19 @@ class ListingRepository implements ListingRepositoryInterface
 
     public function getPublic(): Collection
     {
-        return Listing::where('is_hidden', false)
+       return Listing::where('is_hidden', false)
             ->where('statusas', '!=', 'parduotas')
             ->with(['user', 'category', 'photos'])
-            ->get();
+            ->withCount([
+                'favorites as is_favorited' => function ($q) {
+                    if (Auth::check()) {
+                        $q->where('user_id', Auth::id());
+                    } else {
+                        $q->whereRaw('0 = 1');
+                    }
+                }
+            ])
+        ->get();
     }
 
     public function getByUser(int $userId): Collection
@@ -56,7 +66,29 @@ class ListingRepository implements ListingRepositoryInterface
         return Listing::where('user_id', $userId)
             ->where('is_hidden', false)
             ->with(['category', 'photos'])
-            ->get();
+            ->withCount([
+                'favorites as is_favorited' => function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                }
+            ])
+        ->get();
+    }
+
+        public function getByIds(array $ids): Collection
+    {
+        return Listing::where('is_hidden', false)
+            ->whereIn('id', $ids)
+            ->with(['photos', 'category', 'user'])
+            ->withCount([
+                'favorites as is_favorited' => function ($q) {
+                    if (Auth::check()) {
+                        $q->where('user_id', Auth::id());
+                    } else {
+                        $q->whereRaw('0 = 1');
+                    }
+                }
+            ])
+        ->get();
     }
 
     public function search(array $filters): Collection
@@ -69,21 +101,29 @@ class ListingRepository implements ListingRepositoryInterface
                 'photos',
                 'user.Address.City',
                 'review.user'
+            ])
+            ->withCount([
+                'favorites as is_favorited' => function ($q) {
+                    if (Auth::check()) {
+                        $q->where('user_id', Auth::id());
+                    } else {
+                        $q->whereRaw('0 = 1');
+                    }
+                }
             ]);
 
         // Keyword search
         if (!empty($filters['q'])) {
-            $q = $filters['q'];
-
-            $query->where(function ($q2) use ($q) {
-                $q2->where('pavadinimas', 'LIKE', "%{$q}%")
-                    ->orWhere('aprasymas', 'LIKE', "%{$q}%");
+            $keyword = $filters['q'];
+            $query->where(function ($q2) use ($keyword) {
+                $q2->where('pavadinimas', 'LIKE', "%{$keyword}%")
+                    ->orWhere('aprasymas', 'LIKE', "%{$keyword}%");
             });
         }
 
         // Category filter
         if (!empty($filters['category_id'])) {
-            $query->where('Category_id', $filters['category_id']);
+            $query->where('category_id', $filters['category_id']);
         }
 
         // Type filter (preke / paslauga)
@@ -107,23 +147,28 @@ class ListingRepository implements ListingRepositoryInterface
             });
         }
 
-        return $query->get();
-    }
+        switch ($filters['sort'] ?? null) {
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
 
-    public function getByIds(array $ids): Collection
-    {
-        return Listing::where('is_hidden', false)
-            ->whereIn('id', $ids)
-            ->with(['photos', 'category', 'user'])
-            ->withCount([
-                'favorites as is_favorited' => function ($q) {
-                    if (Auth::check()) {
-                        $q->where('user_id', Auth::id());
-                    } else {
-                        $q->whereRaw('0 = 1');
-                    }
-                }
-            ])
-            ->get();
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+
+            case 'price_asc':
+                $query->orderBy('kaina', 'asc');
+                break;
+
+            case 'price_desc':
+                $query->orderBy('kaina', 'desc');
+                break;
+
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+            }
+
+        return $query->get();
     }
 }
