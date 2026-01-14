@@ -1,17 +1,27 @@
 <x-app-layout>
-    <div x-data="{
-            favorites: Alpine.store('favorites').list,
+    <div
+        x-data="{
             listings: [],
+            loading: true,
 
-            async loadFavorites() {
-                if (this.favorites.length === 0) return;
+            async load() {
+                try {
+                    const res = await fetch('/api/favorites/my', {
+                        credentials: 'include',
+                        headers: { Accept: 'application/json' },
+                    });
 
-                const response = await fetch('/api/listing?ids=' + this.favorites.join(','));
-                const data = await response.json();
-                this.listings = data.data;
+                    this.listings = res.ok ? await res.json() : [];
+
+                } catch (e) {
+                    console.error('Failed loading favorites', e);
+                    this.listings = [];
+                } finally {
+                    this.loading = false;
+                }
             }
         }"
-        x-init="loadFavorites()"
+        x-init="load()"
         class="container mx-auto px-4 mt-10">
         <h1 class="text-3xl font-bold mb-6">My Favorites</h1>
 
@@ -35,20 +45,12 @@
                         <button
                             @click="
                                 Alpine.store('favorites').toggle(item.id);
-                                favorites = Alpine.store('favorites').list;
-                                loadFavorites();"
-                            class="absolute top-2 right-2">
-                            <span
-                                x-show="favorites.includes(item.id)"
-                                class="text-red-500 text-2xl">
-                                ♥️
-                            </span>
-
-                            <span
-                                x-show="!favorites.includes(item.id)"
-                                class="text-gray-300 text-2xl leading-none">
-                                🤍
-                            </span>
+                                load();
+                            "
+                            class="absolute top-2 right-2 text-red-500 text-2xl"
+                            title="Pašalinti iš mėgstamiausių"
+                        >
+                            ♥️
                         </button>
                     </div>
 

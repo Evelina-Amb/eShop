@@ -102,20 +102,30 @@
                         @endif
 
                         <!-- Favorite Button -->
-                        <button
-                            @click="Alpine.store('favorites').toggle({{ $item->id }})"
-                            class="absolute top-2 right-2">
+                        @auth
+                            @if(auth()->id() !== $item->user_id)
+                                <button
+                                    type="button"
+                                    @click.prevent="Alpine.store('favorites').toggle({{ $item->id }})"
+                                    class="absolute top-2 right-2 z-20 w-9 h-9 flex items-center justify-center text-2xl"
+                                    aria-label="Pažymėti kaip mėgstamą"
+                                >
+                                    <span
+                                        x-show="Alpine.store('favorites').has({{ $item->id }})"
+                                        class="text-red-500"
+                                    >
+                                        ♥️
+                                    </span>
 
-                            <span x-show="Alpine.store('favorites').list.includes({{ $item->id }})" class="text-red-500 text-2xl">
-                                ♥️
-                            </span>
-
-                            <span x-show="!Alpine.store('favorites').list.includes({{ $item->id }})" class="text-gray-200 drop-shadow-lg text-2xl leading-none">
-                                🤍
-                            </span>
-
-                        </button>
-
+                                    <span
+                                        x-show="!Alpine.store('favorites').has({{ $item->id }})"
+                                        class="text-gray-200 drop-shadow-lg leading-none"
+                                    >
+                                        🤍
+                                    </span>
+                                </button>
+                            @endif
+                        @endauth
                     </div>
 
                     <div class="p-4">

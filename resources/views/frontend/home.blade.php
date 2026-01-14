@@ -1,6 +1,8 @@
 <x-app-layout>
 
-    <div class="container mx-auto px-4 mt-8">
+    <div x-data
+    x-init="Alpine.store('favorites').load()"
+    class="container mx-auto px-4 mt-8">
         <!-- Listing Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
@@ -22,13 +24,15 @@
 
                             @auth
                             @if(auth()->id() !== $item->user_id)
-                        <button
-                            @click="Alpine.store('favorites').toggle({{ $item->id }})"
-                            class="absolute top-2 right-2">
-                            <span x-show="Alpine.store('favorites').list.includes({{ $item->id }})"
+                        <button type="button"
+                        @click.prevent="Alpine.store('favorites').toggle({{ $item->id }})"
+                        class="absolute top-2 right-2 z-30 w-10 h-10 flex items-center justify-center overflow-hidden"
+                        >
+                            <span x-show="Alpine.store('favorites').has({{ $item->id }})"
                                 class="text-red-500 text-2xl">♥️</span>
 
-                            <span x-show="!Alpine.store('favorites').list.includes({{ $item->id }})" class="text-gray-200 drop-shadow-lg text-[30px] leading-none">🤍</span>
+                            <span x-show="!Alpine.store('favorites').has({{ $item->id }})"
+                                class="text-gray-200 drop-shadow-lg text-[30px] leading-none">🤍</span>
                         </button>
                             @endif
                         @endauth
