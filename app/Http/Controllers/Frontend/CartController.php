@@ -9,6 +9,7 @@ use App\Models\Listing;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Carbon\Carbon;
+use App\Services\OrderService;
 
 class CartController extends Controller
 {
@@ -19,7 +20,13 @@ class CartController extends Controller
             ->where('user_id', auth()->id())
             ->get();
 
-        return view('frontend.cart', compact('cartItems'));
+       if ($cartItems->isEmpty()) {
+        return view('frontend.cart', [
+            'cartItems' => collect()
+        ]);
+    }
+        $total = $cartItems->sum(fn ($i) => ($i->listing?->kaina ?? 0) * $i->kiekis);
+       return view('frontend.cart', compact('cartItems'));
     }
 
     // Add a listing to cart
