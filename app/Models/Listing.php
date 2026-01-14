@@ -41,4 +41,10 @@ class Listing extends Model
     {
         return $this->review()->avg('ivertinimas');
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(\App\Models\Favorite::class, 'listing_id');
+    }
+
 }
