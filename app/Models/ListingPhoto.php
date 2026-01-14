@@ -8,11 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ListingPhoto extends Model
 {
     use HasFactory;
-    protected $table = 'listingphoto';
 
     protected $fillable = ['listing_id', 'failo_url'];
 
-    public function Listing()
+    public function listing()
     {
         return $this->belongsTo(Listing::class);
     }

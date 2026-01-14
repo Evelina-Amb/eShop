@@ -27,9 +27,9 @@ class Listing extends Model
     return $this->belongsTo(Category::class, 'category_id');
    }
 
-    public function ListingPhoto()
+    public function photos()
     {
-        return $this->hasMany(ListingPhoto::class, 'listing_id', 'id');
+        return $this->hasMany(ListingPhoto::class, 'listing_id');
     }
 
     public function Review()
