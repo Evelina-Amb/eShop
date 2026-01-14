@@ -64,7 +64,7 @@ class ListingController extends BaseController
 
     public function search(Request $request)
     {
-        $filters = $request->only(['q', 'category_id', 'tipas', 'min_price', 'max_price', 'sort']);
+        $filters = $request->only(['q', 'category_id', 'tipas', 'min_price', 'max_price', 'sort', 'city_id']);
         $results = $this->listingService->search($filters);
 
         return $this->sendResponse(ListingResource::collection($results), 'Search results retrieved.');
