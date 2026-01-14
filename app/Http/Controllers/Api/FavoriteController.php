@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\BaseController;
-use App\Http\Resources\FavoriteResource;
-use App\Services\FavoriteService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreFavoriteRequest;
-use App\Http\Requests\UpdateFavoriteRequest;
-use App\Http\Resources\BaseCollection;
+use App\Models\Favorite;
+use App\Services\FavoriteService;
 
-class FavoriteController extends BaseController
+class FavoriteController extends Controller
 {
     protected FavoriteService $favoriteService;
 
@@ -18,44 +16,28 @@ class FavoriteController extends BaseController
         $this->favoriteService = $favoriteService;
     }
 
-    public function index()
-    {
-        $favorites = $this->favoriteService->getAll();
-        return $this->sendResponse(new BaseCollection($favorites, FavoriteResource::class), 'Favorites retrieved.');
-    }
-
-    public function show($id)
-    {
-        $favorite = $this->favoriteService->getById($id);
-        if (!$favorite) return $this->sendError('Favorite not found.', 404);
-
-        return $this->sendResponse(new FavoriteResource($favorite), 'Favorite found.');
-    }
-
     public function store(StoreFavoriteRequest $request)
 {
     try {
-        $favorite = $this->favoriteService->create($request->validated());
-        return $this->sendResponse(new FavoriteResource($favorite), 'Favorite created.', 201);
+            $favorite = $this->favoriteService->create([
+                'user_id' => auth()->id(),
+                'listing_id' => $request->listing_id,
+            ]);
+        return response()->json($favorite, 201);
 
     } catch (\Exception $e) {
-        return $this->sendError($e->getMessage(), 400);
+        return response()->json([
+                'message' => $e->getMessage(),
+            ], 400);
     }
 }
 
-    public function update(UpdateFavoriteRequest $request, $id)
+    public function destroyByListing(int $listingId)
     {
-        $favorite = $this->favoriteService->update($id, $request->validated());
-        if (!$favorite) return $this->sendError('Favorite not found.', 404);
+        Favorite::where('user_id', auth()->id())
+            ->where('listing_id', $listingId)
+            ->delete();
 
-        return $this->sendResponse(new FavoriteResource($favorite), 'Favorite updated.');
-    }
-
-    public function destroy($id)
-    {
-        $deleted = $this->favoriteService->delete($id);
-        if (!$deleted) return $this->sendError('Favorite not found.', 404);
-
-        return $this->sendResponse(null, 'Favorite deleted.');
+        return response()->json(['ok' => true]);
     }
 }
