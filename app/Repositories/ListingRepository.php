@@ -6,18 +6,48 @@ use App\Models\Listing;
 use App\Repositories\Contracts\ListingRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class ListingRepository extends BaseRepository implements ListingRepositoryInterface
+class ListingRepository implements ListingRepositoryInterface
 {
+    protected Listing $model;
+
     public function __construct(Listing $model)
     {
-        parent::__construct($model);
+        $this->model = $model;
+    }
+
+    public function getAll(): Collection
+    {
+        return $this->getPublic();
+    }
+
+    public function getById(int $id)
+    {
+        return $this->model->find($id);
+    }
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function update($listing, array $data)
+    {
+        $listing->update($data);
+        return $listing;
+    }
+
+    public function delete($listing)
+    {
+        // HIDE INSTEAD OF HARD DELETE
+        $listing->is_hidden = true;
+        return $listing->save();
     }
 
     public function getPublic(): Collection
     {
         return Listing::where('is_hidden', false)
             ->where('statusas', '!=', 'parduotas')
-            ->with(['user', 'category', 'ListingPhoto'])
+            ->with(['user', 'category', 'photos'])
             ->get();
     }
 
@@ -25,7 +55,7 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
     {
         return Listing::where('user_id', $userId)
             ->where('is_hidden', false)
-            ->with(['category', 'ListingPhoto'])
+            ->with(['category', 'photos'])
             ->get();
     }
 
@@ -36,7 +66,7 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
             ->with([
                 'user',
                 'category',
-                'ListingPhoto',
+                'photos',
                 'user.Address.City',
                 'review.user'
             ]);
@@ -84,7 +114,16 @@ class ListingRepository extends BaseRepository implements ListingRepositoryInter
     {
         return Listing::where('is_hidden', false)
             ->whereIn('id', $ids)
-            ->with(['ListingPhoto', 'category', 'user'])
+            ->with(['photos', 'category', 'user'])
+            ->withCount([
+                'favorites as is_favorited' => function ($q) {
+                    if (Auth::check()) {
+                        $q->where('user_id', Auth::id());
+                    } else {
+                        $q->whereRaw('0 = 1');
+                    }
+                }
+            ])
             ->get();
     }
 }

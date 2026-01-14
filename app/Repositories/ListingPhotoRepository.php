@@ -22,4 +22,20 @@ class ListingPhotoRepository  extends BaseRepository implements ListingPhotoRepo
     {
         return ListingPhoto::with('listing')->find($id);
     }
+
+    public function delete($photo)
+    {
+        $listing = $photo->listing;
+
+        // If this is the last photo dont delete
+        if ($listing->photos()->count() <= 1) {
+            return 'last-photo';
+        }
+
+        if ($photo->failo_url) {
+            Storage::delete('public/' . $photo->failo_url);
+        }
+
+        return $photo->delete();
+    }
 }
