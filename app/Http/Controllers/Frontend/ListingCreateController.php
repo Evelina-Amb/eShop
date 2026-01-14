@@ -47,19 +47,26 @@ class ListingCreateController extends Controller
 
         // Upload photos
         if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $photo) {
-                $path = $photo->store('listing_photos', 'public');
+        foreach ($request->file('photos') as $photo) {
+            $destination = public_path('storage');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0777, true);
+                }
 
-                ListingPhoto::create([
-                    'listing_id' => $listing->id,
-                    'failo_url'  => asset('storage/' . $path),
+            $filename = time() . '_' . $photo->getClientOriginalName();
+            $photo->move($destination, $filename);
+
+            ListingPhoto::create([
+                'listing_id' => $listing->id,
+                'failo_url'  => $filename,
                 ]);
             }
         }
 
+
         return redirect()
             ->route('listing.single', $listing->id)
-            ->with('success', 'Listing created successfully!');
+            ->with('success', 'Skelbimas sėkmingai sukurtas!');
     }
 
     public function edit(Listing $listing)
@@ -70,7 +77,7 @@ class ListingCreateController extends Controller
 
         // Prevent editing non-renewable sold-out items
         if ($listing->is_hidden && $listing->is_renewable == 0) {
-            abort(403, 'This sold-out item cannot be edited.');
+            abort(403, 'Šis išparduotas skelbimas negali būti redaguojamas.');
         }
 
         $categories = Category::all();
@@ -102,19 +109,23 @@ class ListingCreateController extends Controller
 
         // Add new photos
         if ($request->hasFile('photos')) {
-            foreach ($request->photos as $photo) {
-                $path = $photo->store('listing_photos', 'public');
-
+            foreach ($request->file('photos') as $photo) {
+                $destination = public_path('storage');
+                if (!file_exists($destination)) {
+                    mkdir($destination, 0777, true);
+                }
+                $filename = time() . '_' . $photo->getClientOriginalName();
+                $photo->move($destination, $filename);
                 ListingPhoto::create([
                     'listing_id' => $listing->id,
-                    'failo_url'  => asset('storage/' . $path),
+                    'failo_url'  => $filename,
                 ]);
             }
         }
 
         return redirect()
             ->route('listing.single', $listing->id)
-            ->with('success', 'Listing updated successfully!');
+            ->with('success', 'Skelbimas sėkmingai atnaujintas!');
     }
 
     public function deletePhoto(Listing $listing, ListingPhoto $photo)
@@ -129,24 +140,13 @@ class ListingCreateController extends Controller
         }
 
         // Prevent deleting last photo
-        if ($listing->ListingPhoto()->count() <= 1) {
-            return back()->with('error', 'A listing must have at least one photo.');
+        if ($listing->photos()->count() <= 1) {
+            return back()->with('error', 'Skelbimas privalo turėti bent vieną nuotrauką.');
         }
 
-        // Delete from storage
-        if ($photo->failo_url) {
-            $prefix       = asset('storage') . '/';
-            $relativePath = str_starts_with($photo->failo_url, $prefix)
-                ? substr($photo->failo_url, strlen($prefix))
-                : null;
-
-            if ($relativePath) {
-                Storage::disk('public')->delete($relativePath);
-            }
-        }
-
+        @unlink(public_path('storage/' . $photo->failo_url));
         $photo->delete();
 
-        return back()->with('success', 'Photo deleted successfully.');
+        return back()->with('success', 'Nuotrauka sėkmingai ištrinta.');
     }
 }
