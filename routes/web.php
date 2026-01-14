@@ -10,6 +10,10 @@ use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\ListingCreateController;
 use App\Http\Controllers\Frontend\FavoriteController;
 use App\Http\Controllers\Frontend\ReviewController;
+use App\Http\Controllers\ExportController;
+
+Route::get('/export/listings.xml', [ExportController::class, 'listings'])
+    ->name('export.listings.xml');
 
 // Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
