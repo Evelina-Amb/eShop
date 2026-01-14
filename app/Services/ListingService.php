@@ -16,7 +16,9 @@ class ListingService
 
     public function getAll()
     {
-        return $this->listingRepository->getPublic();
+        return $this->listingRepository->search([
+            'sort' => request('sort')
+        ]);
     }
 
     public function getMine(int $userId)
