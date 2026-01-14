@@ -58,9 +58,19 @@ class User extends Authenticatable
         return $this->hasMany(Cart::class);
     }
 
-    public function Favorite()
+    public function favorites()
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    public function favoriteListings()
+    {
+        return $this->belongsToMany(
+            Listing::class,
+            'favorite',
+            'user_id',
+            'listing_id'
+        )->withTimestamps();
     }
 
     public function Order()
