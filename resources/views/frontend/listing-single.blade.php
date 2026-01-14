@@ -40,18 +40,21 @@ input[type=number] {
 
             {{-- LEFT: IMAGE GALLERY --}}
             <div>
-                <img 
+                 <img
                     id="mainImage"
-                    src="{{ $listing->ListingPhoto->first()->failo_url ?? 'https://via.placeholder.com/600x450?text=No+Image' }}"
-                    class="rounded-lg shadow w-full max-h-[450px] object-cover mb-4"
-                >
+                    src="{{ $listing->photos->isNotEmpty()
+                        ? asset('storage/' . $listing->photos->first()->failo_url)
+                        : 'https://via.placeholder.com/600x450?text=No+Image'
+                    }}"
+                    class="rounded-lg shadow w-full max-h-[320px] sm:max-h-[450px] object-cover mb-4"
+                />
 
-                @if($listing->ListingPhoto->count() > 1)
-                    <div class="flex gap-3">
-                        @foreach($listing->ListingPhoto as $photo)
-                            <img 
-                                src="{{ $photo->failo_url }}"
-                                class="w-20 h-20 rounded object-cover cursor-pointer border hover:ring-2 hover:ring-blue-400"
+               @if($listing->photos->count() > 1)
+                    <div class="flex gap-2 sm:gap-3 overflow-x-auto">
+                        @foreach($listing->photos as $photo)
+                            <img
+                                src="{{ asset('storage/' . $photo->failo_url) }}"
+                                class="w-16 h-16 sm:w-20 sm:h-20 rounded object-cover cursor-pointer border hover:ring-2 hover:ring-blue-400"
                                 onclick="document.getElementById('mainImage').src=this.src"
                             >
                         @endforeach
@@ -398,27 +401,32 @@ input[type=number] {
 
     {{-- OTHER PRODUCTS --}}
     @if($similar->count() > 0)
-        <div class="mt-14">
-            <h2 class="text-2xl font-bold mb-6">Other products from this seller</h2>
+    <section class="mt-14 sm:mt-20">
+    <h2 class="text-xl sm:text-2xl font-bold mb-6">Kiti šio pardavėjo produktai</h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                @foreach($similar as $s)
-                    @if($s->id !== $listing->id)
-                        <a href="{{ route('listing.single', $s->id) }}" 
-                           class="bg-white shadow rounded overflow-hidden hover:shadow-md transition">
-                            <img src="{{ $s->ListingPhoto->first()->failo_url ?? 'https://via.placeholder.com/300' }}"
-                                 class="w-full h-40 object-cover">
-                            <div class="p-4">
-                                <div class="font-semibold mb-1">{{ $s->pavadinimas }}</div>
-                                <div class="text-green-700 font-semibold">
-                                    {{ number_format($s->kaina, 2, ',', '.') }} €
-                                </div>
-                            </div>
-                        </a>
-                    @endif
-                @endforeach
-            </div>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        @foreach($similar as $s)
+            @if($s->id !== $listing->id)
+                <a href="{{ route('listing.single', $s->id) }}"
+                   class="bg-white shadow rounded overflow-hidden">
+                    <img
+                        src="{{ $s->photos->isNotEmpty()
+                            ? asset('storage/' . $s->photos->first()->failo_url)
+                            : 'https://via.placeholder.com/300'
+                        }}"
+                        class="w-full h-40 object-cover"
+                    >
+                    <div class="p-4">
+                        <div class="font-semibold">{{ $s->pavadinimas }}</div>
+                        <div class="text-green-700 font-semibold">
+                            {{ number_format($s->kaina, 2, ',', '.') }} €
+                        </div>
+                    </div>
+                </a>
+            @endif
+        @endforeach
+    </div>
+    </section>
     @endif
 
 </div>

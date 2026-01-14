@@ -34,16 +34,25 @@
 
     @foreach($cartItems as $item)
         <div class="grid grid-cols-12 items-center border-b py-4">
-
+ 
             {{-- IMAGE + TITLE --}}
             <div class="col-span-6 flex items-center gap-4">
-                <img 
-                    src="{{ $item->Listing->ListingPhoto->first()->failo_url ?? asset('no-image.png') }}"
-                    class="w-20 h-20 object-cover rounded">
-                <a href="{{ route('listing.single', $item->listing_id) }}"
-                   class="font-semibold text-blue-600 hover:underline">
-                    {{ $item->Listing->pavadinimas }}
-                </a>
+                @if($item->listing->photos->isNotEmpty())
+                        <img
+                            src="{{ asset('storage/' . $item->listing->photos->first()->failo_url) }}"
+                            class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded"
+                        >
+                    @else
+                        <img
+                            src="https://via.placeholder.com/150"
+                            class="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded"
+                        >
+                    @endif
+
+                    <a href="{{ route('listing.single', $item->listing_id) }}"
+                       class="font-semibold text-blue-600 hover:underline text-center sm:text-left">
+                        {{ $item->listing->pavadinimas }}
+                    </a>
             </div>
 
             {{-- PRICE --}}

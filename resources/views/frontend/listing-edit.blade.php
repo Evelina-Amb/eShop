@@ -131,14 +131,15 @@
         <div class="mt-10">
             <label class="font-semibold text-lg">Existing Photos</label>
 
-            @if($listing->ListingPhoto->isEmpty())
+            @if($listing->photos->isEmpty())
                 <p class="text-gray-500 mt-2">No photos uploaded yet.</p>
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
-                    @foreach($listing->ListingPhoto as $photo)
+                    @foreach($listing->photos as $photo)
                         <div class="relative border rounded overflow-hidden">
 
-                            <img src="{{ $photo->failo_url }}" class="w-full h-48 object-cover">
+                            <img src="{{ asset('storage/' . $photo->failo_url) }}" 
+                            class="w-full h-48 object-cover">
 
                             {{-- DELETE BUTTON --}}
                             <form 

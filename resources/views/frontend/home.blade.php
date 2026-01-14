@@ -8,7 +8,20 @@
                 <div class="bg-white shadow rounded overflow-hidden hover:shadow-lg transition">
                     <div class="relative">
 
-                        <img src="{{ $item->ListingPhoto->first()?->failo_url ?? 'https://via.placeholder.com/300' }}" class="w-full h-48 object-cover">
+                        @if($item->photos->isNotEmpty())
+                        <img
+                            src="{{ asset('storage/' . $item->photos->first()->failo_url) }}"
+                            class="w-full h-44 sm:h-48 object-cover"
+                        >
+                            @else
+                                <img
+                                    src="https://via.placeholder.com/300"
+                                    class="w-full h-44 sm:h-48 object-cover"
+                                >
+                            @endif
+
+                            @auth
+                            @if(auth()->id() !== $item->user_id)
                         <button
                             @click="Alpine.store('favorites').toggle({{ $item->id }})"
                             class="absolute top-2 right-2">
@@ -17,6 +30,8 @@
 
                             <span x-show="!Alpine.store('favorites').list.includes({{ $item->id }})" class="text-gray-200 drop-shadow-lg text-[30px] leading-none">🤍</span>
                         </button>
+                            @endif
+                        @endauth
                     </div>
 
                     <div class="p-4">
@@ -38,10 +53,9 @@
                     </div>
 
                 </div>
-            @empty
-                <p class="text-gray-600 text-center">No listings found</p>
-            @endforelse
-
+             @empty
+            <p class="text-gray-600 text-center col-span-full">No listings found</p>
+        @endforelse
         </div>
 
     </div>
