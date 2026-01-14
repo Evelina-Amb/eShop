@@ -106,6 +106,15 @@
     <div class="bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center space-x-4">
 
+<!--laikinai xml -->
+<a
+    href="{{ route('export.listings.xml') }}"
+    download
+    class="px-3 py-2 rounded-lg text-sm font-semibold bg-gray-100 hover:bg-gray-200"
+>
+    XML
+</a>
+
             <!-- SEARCH BAR -->
             <form action="{{ route('search.listings') }}" method="GET" class="flex flex-grow max-w-3xl">
                 <input 
