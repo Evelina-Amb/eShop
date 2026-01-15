@@ -10,8 +10,7 @@ class AdminOnly
 {
     public function handle($request, Closure $next)
 {
-    // temp: use ?admin_id=1 in Postman
-$user = \App\Models\User::find($request->admin_id);
+    $user = $request->user();
 
 if (!$user || $user->role !== 'admin') {
     return response()->json([
