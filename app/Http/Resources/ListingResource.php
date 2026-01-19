@@ -23,12 +23,14 @@ class ListingResource extends JsonResource
         'tipas' => $this->tipas,
         'statusas' => $this->statusas,
 
-         'listing_photo' => $this->ListingPhoto->map(function ($photo) {
-                return [
-                    'id'        => $photo->id,
-                    'failo_url' => $photo->failo_url,
-                ];
-            }),
+        'listing_photo' => $this->ListingPhoto
+                ? $this->ListingPhoto->map(function ($photo) {
+                    return [
+                        'id'        => $photo->id,
+                        'failo_url' => $photo->failo_url,
+                    ];
+                })
+                : [],
 
         'pardavejas' => [
             'id' => $this->user->id ?? null,
