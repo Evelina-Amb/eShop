@@ -18,13 +18,37 @@ class CartController extends BaseController
     {
         $this->cartService = $cartService;
     }
-
+/**
+ * @OA\Get(
+ *   path="/api/cart",
+ *   summary="Get all cart items",
+ *   tags={"Cart"},
+ *   @OA\Response(
+ *     response=200,
+ *     description="Cart items retrieved"
+ *   )
+ * )
+ */
     public function index()
     {
         $carts = $this->cartService->getAll();
         return $this->sendResponse(new BaseCollection($carts, CartResource::class), 'Cart items retrieved.');
     }
-
+/**
+ * @OA\Get(
+ *   path="/api/cart/{id}",
+ *   summary="Get single cart item",
+ *   tags={"Cart"},
+ *   @OA\Parameter(
+ *     name="id",
+ *     in="path",
+ *     required=true,
+ *     @OA\Schema(type="integer")
+ *   ),
+ *   @OA\Response(response=200, description="Cart item found"),
+ *   @OA\Response(response=404, description="Cart item not found")
+ * )
+ */
     public function show($id)
     {
         $item = $this->cartService->getById($id);
@@ -34,7 +58,23 @@ class CartController extends BaseController
 
         return $this->sendResponse(new CartResource($item), 'Cart item found.');
     }
-
+/**
+ * @OA\Post(
+ *   path="/api/cart",
+ *   summary="Add item to cart",
+ *   tags={"Cart"},
+ *   @OA\RequestBody(
+ *     required=true,
+ *     @OA\JsonContent(
+ *       @OA\Property(property="user_id", type="integer"),
+ *       @OA\Property(property="listing_id", type="integer"),
+ *       @OA\Property(property="quantity", type="integer")
+ *     )
+ *   ),
+ *   @OA\Response(response=201, description="Cart item created"),
+ *   @OA\Response(response=400, description="Validation error")
+ * )
+ */
     public function store(StoreCartRequest $request)
     {
         try {
@@ -44,7 +84,27 @@ class CartController extends BaseController
             return $this->sendError($e->getMessage(), 400);
         }
     }
-
+/**
+ * @OA\Put(
+ *   path="/api/cart/{id}",
+ *   summary="Update cart item quantity",
+ *   tags={"Cart"},
+ *   @OA\Parameter(
+ *     name="id",
+ *     in="path",
+ *     required=true,
+ *     @OA\Schema(type="integer")
+ *   ),
+ *   @OA\RequestBody(
+ *     required=true,
+ *     @OA\JsonContent(
+ *       @OA\Property(property="quantity", type="integer")
+ *     )
+ *   ),
+ *   @OA\Response(response=200, description="Cart item updated"),
+ *   @OA\Response(response=404, description="Cart item not found")
+ * )
+ */
     public function update(UpdateCartRequest $request, $id)
     {
         try {
@@ -58,7 +118,22 @@ class CartController extends BaseController
             return $this->sendError($e->getMessage(), 400);
         }
     }
-
+/**
+ * @OA\Delete(
+ *   path="/api/cart/item",
+ *   summary="Remove specific listing from cart",
+ *   tags={"Cart"},
+ *   @OA\RequestBody(
+ *     required=true,
+ *     @OA\JsonContent(
+ *       @OA\Property(property="user_id", type="integer"),
+ *       @OA\Property(property="listing_id", type="integer")
+ *     )
+ *   ),
+ *   @OA\Response(response=200, description="Item removed from cart"),
+ *   @OA\Response(response=400, description="Missing parameters")
+ * )
+ */
     public function clearItem(Request $request)
     {
         $userId    = $request->user_id;
@@ -72,7 +147,21 @@ class CartController extends BaseController
 
         return $this->sendResponse($deleted, 'Item removed from cart.');
     }
-
+/**
+ * @OA\Delete(
+ *   path="/api/cart/clear",
+ *   summary="Clear entire cart for user",
+ *   tags={"Cart"},
+ *   @OA\RequestBody(
+ *     required=true,
+ *     @OA\JsonContent(
+ *       @OA\Property(property="user_id", type="integer")
+ *     )
+ *   ),
+ *   @OA\Response(response=200, description="Cart cleared"),
+ *   @OA\Response(response=400, description="Missing user_id")
+ * )
+ */
     public function clearAll(Request $request)
     {
         $userId = $request->user_id;
@@ -85,7 +174,21 @@ class CartController extends BaseController
 
         return $this->sendResponse($deleted, 'Cart cleared.');
     }
-
+/**
+ * @OA\Delete(
+ *   path="/api/cart/{id}",
+ *   summary="Delete cart item by ID",
+ *   tags={"Cart"},
+ *   @OA\Parameter(
+ *     name="id",
+ *     in="path",
+ *     required=true,
+ *     @OA\Schema(type="integer")
+ *   ),
+ *   @OA\Response(response=200, description="Cart item deleted"),
+ *   @OA\Response(response=404, description="Cart item not found")
+ * )
+ */
     public function destroy($id)
     {
         $deleted = $this->cartService->delete($id);

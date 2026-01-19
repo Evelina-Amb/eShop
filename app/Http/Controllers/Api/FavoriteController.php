@@ -16,6 +16,23 @@ class FavoriteController extends Controller
         $this->favoriteService = $favoriteService;
     }
 
+/**
+ * @OA\Post(
+ *   path="/api/favorite",
+ *   summary="Add listing to favorites",
+ *   tags={"Favorites"},
+ *   security={{"sanctum":{}}},
+ *   @OA\RequestBody(
+ *     required=true,
+ *     @OA\JsonContent(
+ *       required={"listing_id"},
+ *       @OA\Property(property="listing_id", type="integer")
+ *     )
+ *   ),
+ *   @OA\Response(response=201, description="Favorite created")
+ * )
+ */
+
     public function store(StoreFavoriteRequest $request)
 {
     try {
@@ -31,6 +48,22 @@ class FavoriteController extends Controller
             ], 400);
     }
 }
+
+/**
+ * @OA\Delete(
+ *   path="/api/favorite/{listingId}",
+ *   summary="Remove listing from favorites",
+ *   tags={"Favorites"},
+ *   security={{"sanctum":{}}},
+ *   @OA\Parameter(
+ *     name="listingId",
+ *     in="path",
+ *     required=true,
+ *     @OA\Schema(type="integer")
+ *   ),
+ *   @OA\Response(response=200, description="Favorite removed")
+ * )
+ */
 
     public function destroyByListing(int $listingId)
     {
