@@ -8,7 +8,7 @@
                 
                 <!-- LOGO -->
                 <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">
-                    eShop
+                    {{ setting('APP_NAME') }}
                 </a>
 
                 <!-- MAIN NAVIGATION -->
